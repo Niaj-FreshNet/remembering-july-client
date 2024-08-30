@@ -1,0 +1,296 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "title": "Software Engineer",
+        "company": "TechCorp",
+        "email": "john.doe@example.com",
+        "phone": "123-456-7890",
+        "skills": ["JavaScript", "React", "Node.js"],
+        "experience": 5,
+        "image": {
+            "url": "https://example.com/images/john_doe.jpg",
+            "alt": "John Doe's Profile Picture"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Jane Smith",
+        "title": "Project Manager",
+        "company": "BizSolutions",
+        "email": "jane.smith@example.com",
+        "phone": "098-765-4321",
+        "skills": ["Project Management", "Agile", "Scrum"],
+        "experience": 8,
+        "image": {
+            "url": "https://example.com/images/jane_smith.jpg",
+            "alt": "Jane Smith's Profile Picture"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Michael Brown",
+        "title": "Data Scientist",
+        "company": "DataWorks",
+        "email": "michael.brown@example.com",
+        "phone": "456-789-0123",
+        "skills": ["Python", "Machine Learning", "Data Analysis"],
+        "experience": 6,
+        "image": {
+            "url": "https://example.com/images/michael_brown.jpg",
+            "alt": "Michael Brown's Profile Picture"
+        }
+    },
+    {
+        "id": 4,
+        "name": "Emily White",
+        "title": "UX Designer",
+        "company": "DesignPros",
+        "email": "emily.white@example.com",
+        "phone": "321-654-9870",
+        "skills": ["UI/UX Design", "Adobe XD", "Figma"],
+        "experience": 4,
+        "image": {
+            "url": "https://example.com/images/emily_white.jpg",
+            "alt": "Emily White's Profile Picture"
+        }
+    },
+    {
+        "id": 5,
+        "name": "David Johnson",
+        "title": "Marketing Manager",
+        "company": "MarketMasters",
+        "email": "david.johnson@example.com",
+        "phone": "234-567-8901",
+        "skills": ["SEO", "Content Marketing", "Social Media"],
+        "experience": 7,
+        "image": {
+            "url": "https://example.com/images/david_johnson.jpg",
+            "alt": "David Johnson's Profile Picture"
+        }
+    },
+    {
+        "id": 6,
+        "name": "Sarah Lee",
+        "title": "Graphic Designer",
+        "company": "Creative Inc.",
+        "email": "sarah.lee@example.com",
+        "phone": "678-123-4567",
+        "skills": ["Photoshop", "Illustrator", "Branding"],
+        "experience": 3,
+        "image": {
+            "url": "https://example.com/images/sarah_lee.jpg",
+            "alt": "Sarah Lee's Profile Picture"
+        }
+    },
+    {
+        "id": 7,
+        "name": "Tom Wilson",
+        "title": "DevOps Engineer",
+        "company": "CloudNet",
+        "email": "tom.wilson@example.com",
+        "phone": "789-012-3456",
+        "skills": ["AWS", "Docker", "CI/CD"],
+        "experience": 5,
+        "image": {
+            "url": "https://example.com/images/tom_wilson.jpg",
+            "alt": "Tom Wilson's Profile Picture"
+        }
+    },
+    {
+        "id": 8,
+        "name": "Jessica Brown",
+        "title": "Content Writer",
+        "company": "WriteWorks",
+        "email": "jessica.brown@example.com",
+        "phone": "890-123-4567",
+        "skills": ["SEO Writing", "Copywriting", "Editing"],
+        "experience": 4,
+        "image": {
+            "url": "https://example.com/images/jessica_brown.jpg",
+            "alt": "Jessica Brown's Profile Picture"
+        }
+    },
+    {
+        "id": 9,
+        "name": "Ryan Davis",
+        "title": "Full Stack Developer",
+        "company": "WebTech",
+        "email": "ryan.davis@example.com",
+        "phone": "901-234-5678",
+        "skills": ["JavaScript", "Python", "Django", "React"],
+        "experience": 6,
+        "image": {
+            "url": "https://example.com/images/ryan_davis.jpg",
+            "alt": "Ryan Davis's Profile Picture"
+        }
+    },
+    {
+        "id": 10,
+        "name": "Megan Carter",
+        "title": "HR Specialist",
+        "company": "PeopleFirst",
+        "email": "megan.carter@example.com",
+        "phone": "012-345-6789",
+        "skills": ["Recruitment", "Employee Relations", "HR Policies"],
+        "experience": 7,
+        "image": {
+            "url": "https://example.com/images/megan_carter.jpg",
+            "alt": "Megan Carter's Profile Picture"
+        }
+    },
+    {
+        "id": 11,
+        "name": "Chris Evans",
+        "title": "IT Support Specialist",
+        "company": "TechAssist",
+        "email": "chris.evans@example.com",
+        "phone": "123-456-7890",
+        "skills": ["Troubleshooting", "Network Support", "Customer Service"],
+        "experience": 4,
+        "image": {
+            "url": "https://example.com/images/chris_evans.jpg",
+            "alt": "Chris Evans's Profile Picture"
+        }
+    },
+    {
+        "id": 12,
+        "name": "Lisa Green",
+        "title": "Product Manager",
+        "company": "InnovateHub",
+        "email": "lisa.green@example.com",
+        "phone": "234-567-8901",
+        "skills": ["Product Development", "Market Research", "Agile"],
+        "experience": 9,
+        "image": {
+            "url": "https://example.com/images/lisa_green.jpg",
+            "alt": "Lisa Green's Profile Picture"
+        }
+    },
+    {
+        "id": 13,
+        "name": "Daniel Adams",
+        "title": "Sales Executive",
+        "company": "SalesForce",
+        "email": "daniel.adams@example.com",
+        "phone": "345-678-9012",
+        "skills": ["Lead Generation", "Negotiation", "CRM"],
+        "experience": 5,
+        "image": {
+            "url": "https://example.com/images/daniel_adams.jpg",
+            "alt": "Daniel Adams's Profile Picture"
+        }
+    },
+    {
+        "id": 14,
+        "name": "Laura Turner",
+        "title": "Accountant",
+        "company": "FinancePlus",
+        "email": "laura.turner@example.com",
+        "phone": "456-789-0123",
+        "skills": ["Financial Analysis", "Taxation", "Bookkeeping"],
+        "experience": 10,
+        "image": {
+            "url": "https://example.com/images/laura_turner.jpg",
+            "alt": "Laura Turner's Profile Picture"
+        }
+    },
+    {
+        "id": 15,
+        "name": "Peter Wright",
+        "title": "Business Analyst",
+        "company": "BizInsights",
+        "email": "peter.wright@example.com",
+        "phone": "567-890-1234",
+        "skills": ["Data Analysis", "Business Strategy", "SQL"],
+        "experience": 6,
+        "image": {
+            "url": "https://example.com/images/peter_wright.jpg",
+            "alt": "Peter Wright's Profile Picture"
+        }
+    },
+    {
+        "id": 16,
+        "name": "Olivia Martin",
+        "title": "Social Media Manager",
+        "company": "SocialBuzz",
+        "email": "olivia.martin@example.com",
+        "phone": "678-901-2345",
+        "skills": ["Social Media Strategy", "Content Creation", "Analytics"],
+        "experience": 5,
+        "image": {
+            "url": "https://example.com/images/olivia_martin.jpg",
+            "alt": "Olivia Martin's Profile Picture"
+        }
+    },
+    {
+        "id": 17,
+        "name": "James Moore",
+        "title": "Chief Technology Officer",
+        "company": "TechVision",
+        "email": "james.moore@example.com",
+        "phone": "789-012-3456",
+        "skills": ["IT Strategy", "Team Leadership", "Innovation"],
+        "experience": 12,
+        "image": {
+            "url": "https://example.com/images/james_moore.jpg",
+            "alt": "James Moore's Profile Picture"
+        }
+    },
+    {
+        "id": 18,
+        "name": "Sophia Taylor",
+        "title": "Legal Advisor",
+        "company": "LawPros",
+        "email": "sophia.taylor@example.com",
+        "phone": "890-123-4567",
+        "skills": ["Corporate Law", "Contract Negotiation", "Compliance"],
+        "experience": 8,
+        "image": {
+            "url": "https://example.com/images/sophia_taylor.jpg",
+            "alt": "Sophia Taylor's Profile Picture"
+        }
+    },
+    {
+        "id": 19,
+        "name": "Mark Harris",
+        "title": "Operations Manager",
+        "company": "EfficientOps",
+        "email": "mark.harris@example.com",
+        "phone": "901-234-5678",
+        "skills": ["Process Improvement", "Supply Chain Management", "Leadership"],
+        "experience": 10,
+        "image": {
+            "url": "https://example.com/images/mark_harris.jpg",
+            "alt": "Mark Harris's Profile Picture"
+        }
+    },
+    {
+        "id": 20,
+        "name": "Victoria Allen",
+        "title": "Financial Analyst",
+        "company": "FinanceGroup",
+        "email": "victoria.allen@example.com",
+        "phone": "012-345-6789",
+        "skills": ["Financial Modeling", "Investment Analysis", "Excel"],
+        "experience": 4,
+        "image": {
+            "url": "https://example.com/images/victoria_allen.jpg",
+            "alt": "Victoria Allen's Profile Picture"
+        }
+    },
+    {
+        "id": 21,
+        "name": "Luke Harris",
+        "title": "Systems Architect",
+        "company": "ArchTech",
+        "email": "luke.harris@example.com",
+        "phone": "123-456-7890",
+        "skills": ["System Design", "Cloud Computing", "Microservices"],
+        "experience": 7,
+        "image": {
+            "url": "https://example.com/images/luke_harris.jpg",
+            "alt": "Luke Harris's Profile Picture"
+        }
+    }
+]
