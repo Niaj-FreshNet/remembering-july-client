@@ -35,6 +35,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main></Main>,
+    errorElement: <UnderConstructionPage />,
     children: [
 
       // visitor routes

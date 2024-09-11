@@ -55,12 +55,12 @@ DataCard = ({ card, index }) => {
                     <Typography gutterBottom variant="body1" component="div" sx={{ color: 'text.primary', marginTop: 1 }}>
                         {occupation}
                     </Typography>
-                    <Typography variant="body3" sx={{ color: 'text.primary' }}>
+                    <Typography variant="body1" sx={{ color: 'text.primary' }}>
                         {institution}
                     </Typography>
-                    <Typography variant="body3" sx={{ color: 'text.primary' }}>
+                    {/* <Typography variant="body1" sx={{ color: 'text.primary' }}>
                         {place}
-                    </Typography>
+                    </Typography> */}
                     <Typography variant="body1" component="div" sx={{ color: 'text.secondary', marginY: 1 }}>
                         {date}
                     </Typography>

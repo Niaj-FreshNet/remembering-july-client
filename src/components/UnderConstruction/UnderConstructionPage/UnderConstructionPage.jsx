@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Preloader from "../Preloader/Preloader";
 import './UnderConstructionPage.css'
 
@@ -10,6 +11,10 @@ function UnderConstructionPage() {
                     <br />
                     Under Construction
                 </h1>
+                <br />
+                <div>
+                    <Link to="/"><button className="btn btn-success">GO TO HOME</button></Link>
+                </div>
             </div>
             <Preloader />
         </div>
