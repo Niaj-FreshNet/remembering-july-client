@@ -93,8 +93,8 @@ const ReviewPending = () => {
             headerName: 'নাম',
             width: 200,
             renderCell: (params) => (
-                <MuiLink onClick={() => navigate(`/cards/${params.row._id}`)} className="font-bold" sx={{ cursor: 'pointer' }}>
-                    {params.value}
+                <MuiLink onClick={() => navigate(`/info/${params.row._id}`)} className="font-bold" sx={{ cursor: 'pointer' }}>
+                    {params.value}           {/* replaced "`/cards/${params.row._id}`" with `/info/${params.row._id}`*/}
                 </MuiLink>
             ),
         },

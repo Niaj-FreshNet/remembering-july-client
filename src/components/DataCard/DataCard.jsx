@@ -21,20 +21,20 @@ import { FacebookIcon, FacebookMessengerIcon, FacebookMessengerShareButton, Face
 const 
 DataCard = ({ card, index }) => {
 
-    const { _id, category, name, occupation, institute, place, date, image } = card;
+    const { _id, category, name, occupation, institution, place, date, image } = card;
     const navigate = useNavigate();
 
     const [showShareOptions, setShowShareOptions] = React.useState(false);
 
     const handleClick = () => {
-        navigate(`/cards/${_id}`);
+        navigate(`/info/${_id}`);      {/* replaced "cards/${_id}" with "info/${_id}"*/}
     }
 
     const handleShareClick = () => {
         setShowShareOptions(!showShareOptions);
     }
 
-    const shareUrl = `${window.location.origin}/cards/${_id}`;
+    const shareUrl = `${window.location.origin}/info/${_id}`;   {/* replaced "cards/${_id}" with "info/${_id}"*/}
     const title = `${name} - ${category} at ${date}`;
 
 
@@ -56,7 +56,7 @@ DataCard = ({ card, index }) => {
                         {occupation}
                     </Typography>
                     <Typography variant="body3" sx={{ color: 'text.primary' }}>
-                        {institute}
+                        {institution}
                     </Typography>
                     <Typography variant="body3" sx={{ color: 'text.primary' }}>
                         {place}

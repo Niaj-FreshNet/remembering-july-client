@@ -42,11 +42,13 @@ export const router = createBrowserRouter([
         path: '/',
         element: <Home></Home>
       },
-      // {
+
+      // {/* replaced "card/:id" with "info/:id" */}
       {
-        path: 'cards/:id',
+        path: 'info/:id',  
         element: <DetailedPage></DetailedPage>
       },
+
       {
         path: 'all',
         element: <AllListPage></AllListPage>
