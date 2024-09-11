@@ -14,7 +14,7 @@ import { styled } from '@mui/material/styles';
 
 import ForgotPassword from './ForgotPassword';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons';
-import GoogleSignIn from '../../components/GoogleLogin/GoogleLogin';
+import GoogleSignIn from '../../components/GoogleSignIn/GoogleSignIn';
 import FacebookSignIn from '../../components/FacebookSignIn/FacebookSignIn';
 import useAuth from '../../hooks/useAuth';
 import { toast, ToastContainer } from 'react-toastify';

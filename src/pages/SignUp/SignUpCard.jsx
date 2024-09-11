@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 
 import FacebookSignIn from '../../components/FacebookSignIn/FacebookSignIn';
-import GoogleSignIn from '../../components/GoogleLogin/GoogleLogin';
+import GoogleSignIn from '../../components/GoogleSignIn/GoogleSignIn';
 import useAuth from '../../hooks/useAuth';
 import useRedirectAfterLogin from '../../hooks/useRedirectAfterLogin';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
