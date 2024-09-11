@@ -1,27 +1,38 @@
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
-import img1 from '../../../assets/01.jpg'
-import img2 from '../../../assets/02.jpg'
-import img3 from '../../../assets/03.png'
-import img4 from '../../../assets/bannerbg.png'
-
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import bloodybd from '../../../assets/bloodybd.webp';
+import { Skeleton } from '@mui/material';
 
 const Banner = () => {
+    const [loading, setLoading] = useState(false);
+
+    const handleImageLoad = () => {
+        setLoading(false);
+    };
+
     return (
-        <Carousel>
-            <div>
-                <img src={img4} />
-            </div>
-            {/* <div>
-                <img src={img1} />
-            </div>
-            <div>
-                <img src={img2} />
-            </div>
-            <div>
-                <img src={img3} />
-            </div> */}
-        </Carousel>
+        <div className="relative">
+            {loading && <Skeleton variant="rectangular" width="100%" height="00px" />}
+            <Carousel
+                showThumbs={false}
+                autoPlay={true}
+                interval={3000}
+                infiniteLoop={true}
+                showStatus={false}
+                showIndicators={false}
+                className="relative"
+            >
+                <div className="relative overflow-hidden">
+                    <img
+                        src={bloodybd}
+                        alt="Bloody Bangladesh"
+                        className={`object-contain h-full w-full ${loading ? 'hidden' : 'block'}`}
+                        onLoad={handleImageLoad}
+                    />
+                </div>
+            </Carousel>
+        </div>
     );
 };
 

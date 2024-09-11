@@ -1,0 +1,49 @@
+.details-info {
+    font-size: medium;
+    color: rgb(87, 87, 87);
+    font-weight: 500;
+    /* color: gray; */
+}
+
+.details-info-value {
+    font-size: medium;
+    font-weight: 500;
+    color: black;
+}
+
+.death-info {
+    font-size: medium;
+    color: rgb(87, 87, 87);
+    font-weight: 500;
+}
+
+.death-info-value {
+    font-size: medium;
+    font-weight: 500;
+    color: rgb(145, 19, 19);
+}
+
+.death-info-details {
+    font-size: medium;
+    font-weight: 600;
+    color: rgb(50, 50, 50);
+}
+
+.death-info-details-value {
+    font-size: medium;
+    font-weight: 500;
+    color: rgb(167, 22, 22);
+}
+
+.bio {
+    font-size: medium;
+    font-weight: 600;
+    color: rgb(50, 50, 50);
+}
+
+.bio-value {
+    font-size: medium;
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+
+}

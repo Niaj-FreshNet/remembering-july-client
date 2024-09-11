@@ -1,0 +1,50 @@
+import React, { Suspense } from 'react';
+import useCards from '../../../hooks/useCards';
+import { Skeleton } from '@mui/material';
+import { Helmet } from 'react-helmet-async';
+// import AllListTab from '../AllListTab/AllListTab';
+
+
+const AllListTab = React.lazy(() => import('../AllListTab/AllListTab'));
+
+
+const LoadingSkeleton = () => (
+    <div className="flex justify-center">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-x-4 gap-y-4 mt-28 mb-8 px-3 md:px-4 lg:px-6 xl:px-8">
+            {Array.from(new Array(20)).map((_, index) => (
+                <Skeleton
+                    key={index}
+                    animation="wave"
+                    variant="rectangular"
+                    className="rounded-lg mx-auto"
+                    width={225}
+                    height={300}
+                />
+            ))}
+        </div>
+    </div>
+)
+
+function App() {
+
+    const [cards, loading] = useCards();
+
+    return (
+        <div className='max-w-screen-xl mx-auto px-2 md:px-10'>
+            <Helmet>
+                <title>All List - GENOCIDE</title>
+            </Helmet>
+            {
+                loading ? (
+                    <LoadingSkeleton />
+                ) : (
+                    <Suspense fallback={<LoadingSkeleton />}>
+                        <AllListTab cards={cards} />
+                    </Suspense>
+                )
+            }
+        </div>
+    );
+}
+
+export default App;
