@@ -68,7 +68,7 @@ DataCard = ({ card, index }) => {
             </CardActionArea>
             <CardActions className='flex justify-end'>
                 {showShareOptions && (
-                    <div className="flex space-x-2">
+                    <div className="hidden md:flex md:space-x-2">
                         <FacebookShareButton url={shareUrl} quote={title}>
                             <FacebookIcon size={28} round />
                         </FacebookShareButton>
@@ -80,6 +80,22 @@ DataCard = ({ card, index }) => {
                         </WhatsappShareButton>
                         <TwitterShareButton url={shareUrl} title={title}>
                             <XIcon size={28} round />
+                        </TwitterShareButton>
+                    </div>
+                )}
+                {showShareOptions && (
+                    <div className="flex space-x-1 md:hidden">
+                        <FacebookShareButton url={shareUrl} quote={title}>
+                            <FacebookIcon size={24} round />
+                        </FacebookShareButton>
+                        <FacebookMessengerShareButton url={shareUrl} quote={title}>
+                            <FacebookMessengerIcon size={24} round />
+                        </FacebookMessengerShareButton>
+                        <WhatsappShareButton url={shareUrl} title={title} separator=":: ">
+                            <WhatsappIcon size={24} round />
+                        </WhatsappShareButton>
+                        <TwitterShareButton url={shareUrl} title={title}>
+                            <XIcon size={24} round />
                         </TwitterShareButton>
                     </div>
                 )}

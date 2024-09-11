@@ -9,6 +9,7 @@ import { Button } from "@mui/material";
 import { CiShare2 } from "react-icons/ci";
 import { FaFacebook } from "react-icons/fa";
 import dayjs from "dayjs";
+import Spinner from "./Spinner";
 
 const DetailedPage = () => {
 
@@ -28,7 +29,7 @@ const DetailedPage = () => {
     }, [cards, loading, id]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Spinner />; // Show Spinner when loading   {/* :::::::CHATGPT:::::: Kindly set a loader on the full viewport (i've a component spinner) */}
     }
 
     if (!details) {

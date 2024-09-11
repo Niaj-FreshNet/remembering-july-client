@@ -10,14 +10,14 @@ const AllListTab = React.lazy(() => import('../AllListTab/AllListTab'));
 
 const LoadingSkeleton = () => (
     <div className="flex justify-center">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-x-4 gap-y-4 mt-28 mb-8 px-3 md:px-4 lg:px-6 xl:px-8">
+        <div className="grid grid-cols-2 mx-auto md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-x-2 md:gap-x-4 gap-y-4 mt-28 mb-8">
             {Array.from(new Array(20)).map((_, index) => (
                 <Skeleton
                     key={index}
                     animation="wave"
                     variant="rectangular"
                     className="rounded-lg mx-auto"
-                    width={225}
+                    width={210}
                     height={300}
                 />
             ))}
