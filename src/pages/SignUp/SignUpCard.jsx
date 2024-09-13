@@ -50,50 +50,43 @@ export default function SignUpCard() {
   const axiosPublic = useAxiosPublic();
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    if (!validateInputs()) {
+      return;
+    }
 
+    const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
     const name = data.get('name');
     const phone = data.get('phone');
-    console.log(name, phone, email, password);
 
-    if (!email || !password) {
-      toast.error('Email and password are required');
-      return;
+    try {
+      const result = await createUser(email, password);
+      await updateUserProfile(name);
+      const userInfo = {
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+        creationTime: result.user?.metadata?.creationTime,
+      };
+      const res = await axiosPublic.post('/users', userInfo);
+      if (res.data.insertedId) {
+        toast.success('Congratulations! Signed Up Successfully');
+        redirectAfterLogin();
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        setEmailError(true);
+        setEmailErrorMessage('This email is already in use.');
+      } else {
+        toast.error(error.message);
+      }
     }
-
-    createUser(email, password)
-      .then(result => {
-        // console.log(result.user)
-        updateUserProfile(name)
-          .then(() => {
-            // create user entry in the database
-            console.log('user profile updated')
-            const userInfo = {
-              name: name,
-              email: email,
-              phone: phone,
-              password: password,
-              creationTime: result.user?.metadata?.creationTime
-            }
-            // console.log(userInfo);
-            axiosPublic.post('/users', userInfo)
-              .then(res => {
-                console.log(res.data);
-                if (res.data.insertedId) {
-                  toast.success("Congratulations! Signed Up Successfully");
-                  redirectAfterLogin();
-                  window.scrollTo(0, 0); // Scroll to top
-                }
-              });
-          })
-      })
   };
-
-
 
   const validateInputs = () => {
     const email = document.getElementById('email');
@@ -111,9 +104,9 @@ export default function SignUpCard() {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 4) {
+    if (!password.value || password.value.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 4 characters long.');
+      setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
     } else {
       setPasswordError(false);
