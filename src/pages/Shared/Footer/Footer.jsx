@@ -97,11 +97,11 @@ const Footer = () => {
                     </div>
                 </div>
                 <nav className="md:grid md:grid-flow-col md:gap-4 text-black">
-                    <a href="http://localhost:5173" className="link link-hover">হোম</a>
-                    <a href="http://localhost:5173/allList" className="link link-hover">সকল তালিকা</a>
-                    <a href="http://localhost:5173/gallery" className="link link-hover">জুলাই-২৪ গ্যালারী</a>
-                    <a href="http://localhost:5173/shaheedForm" className="link link-hover">তথ্য দিন</a>
-                    <a href="http://localhost:5173/about" className="link link-hover">বিস্তারিত</a>
+                    <a href="https://www.genocide2024.info" className="link link-hover">হোম</a>
+                    <a href="https://www.genocide2024.info/allList" className="link link-hover">সকল তালিকা</a>
+                    <a href="https://www.genocide2024.info/gallery" className="link link-hover">জুলাই-২৪ গ্যালারী</a>
+                    <a href="https://www.genocide2024.info/shaheedForm" className="link link-hover">তথ্য দিন</a>
+                    <a href="https://www.genocide2024.info/about" className="link link-hover">বিস্তারিত</a>
                 </nav>
                 <div>
                     <div className="grid grid-flow-col gap-4 text-black">

@@ -1,0 +1,18 @@
+
+
+.gallery-container {
+  padding: 20px;
+  position: relative;
+  background: url('../../assets/blackhand.webp') no-repeat center center;
+  background-size: cover;
+  min-height: 600px;
+}
+
+
+
+.image-gallery img, .image-gallery video {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  /* height: auto; */
+}

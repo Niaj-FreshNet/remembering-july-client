@@ -11,8 +11,13 @@ import { useState } from "react";
 import { CircularProgress, Dialog, DialogContent } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 
+
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
+
+const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dwl2slbiw/upload`;
+const uploadPreset = 'remembering-july-videos';
+
 
 const FormShaheed = () => {
     const { user } = useAuth();
@@ -23,9 +28,12 @@ const FormShaheed = () => {
         }
     });
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+
 
     const onSubmit = async (data) => {
-        setLoading(true); // Start loading
+        setLoading(true);
+        setProgress(0); // Start loading
 
         const shaheedAllInfo = {
             category: 'শহীদ',
@@ -71,6 +79,31 @@ const FormShaheed = () => {
             // Submit the form data
             const result = await axiosPublic.post('/cards', shaheedAllInfo);
 
+            try {
+                if (data.media && data.media.length > 0) {
+                    // If media is selected, upload it
+                    const mediaUrls = [];
+                    for (let i = 0; i < data.media.length; i++) {
+                        const file = data.media[i];
+                        const cloudinaryData = new FormData();
+                        cloudinaryData.append('file', file);
+                        cloudinaryData.append('upload_preset', uploadPreset);
+
+                        const response = await axios.post(cloudinaryUrl, cloudinaryData, {
+                            onUploadProgress: (progressEvent) => {
+                                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                setProgress(percentCompleted);
+                            }
+                        });
+
+                        shaheedAllInfo.media = response.data.secure_url; // Add the uploaded media URL to the form data
+                    }
+                    setSuccess(true);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+
             if (result.data.insertedId) {
                 reset();
                 Swal.fire({
@@ -101,6 +134,8 @@ const FormShaheed = () => {
         } finally {
             setLoading(false); // End loading
         }
+
+
     }
 
 
@@ -111,7 +146,7 @@ const FormShaheed = () => {
                 <title>শহীদদের তথ্য দিন - GENOCIDE</title>
             </Helmet>
             <div className="max-w-screen-lg mx-auto">
-               <form onSubmit={handleSubmit(onSubmit)} className="max-w-screen-lg flex flex-col gap-3">
+                <form onSubmit={handleSubmit(onSubmit)} className="max-w-screen-lg flex flex-col gap-3">
                     <div className=" rounded-b-[12px] bg-white shadow-sm w-4/5 mx-auto">
                         <div className="form-control w-full pl-8 pr-8 py-6 my-auto text-pretty">
                             <span className="label label-text text-2xl">বৈষম্যবিরোধী ছাত্র আন্দোলন - ২০২৪ এর শহীদ ভাই-বোনদের সঠিক তথ্য সরবরাহ করে সকল শহীদদের তালিকা প্রস্তুতিতে সহযোগিতা করুন।</span>
@@ -302,11 +337,24 @@ const FormShaheed = () => {
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
                         <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
                             <div className="flex mb-2 -mt-2">
-                                <span className="label label-text text-[16px]">শহীদের একটি ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
+                                <span className="label label-text text-[16px]">শহীদের একটি ছবি সংযুক্ত করুন (Only JPG/PNG)</span>
                             </div>
                             <input
                                 {...register("image", { required: false })}
                                 type="file"
+                                className="file-input file-input-bordered w-full max-w-xs" />
+                        </label>
+                    </div>
+                    <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
+                        <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
+                            <div className="flex mb-2 -mt-2">
+                                <span className="label label-text text-[16px]">সংশ্লিষ্ট আরো ছবি বা ভিডিও থাকলে আপলোড করুন (Video and Image)</span>
+                            </div>
+                            <input
+                                multiple
+                                {...register("media", { required: false })}
+                                type="file"
+                                accept="image/*,video/*"
                                 className="file-input file-input-bordered w-full max-w-xs" />
                         </label>
                     </div>

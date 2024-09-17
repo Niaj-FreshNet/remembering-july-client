@@ -51,12 +51,14 @@ const DetailedPage = () => {
     return (
         <div className="max-w-screen-lg mx-auto my-2 px-6 py-6 text-pretty">
             {/* Mobile Header */}
-            <div className="mb-4 md:hidden">
-                <div className="badge absolute rounded-lg left-14 bg-red-700 text-white px-2 py-4 font-extrabold">
-                    <p>{details.category}</p>
-                </div>
-                <div className="flex justify-center text-3xl font-semibold px-6 ml-10">
-                    <span>{details.name}</span>
+            <div className="flex">
+                <div className="flex gap-4 items-start mx-auto mb-4 px-6 md:hidden">
+                    <div className="badge rounded-lg bg-red-700 text-white px-2 py-4 mt-1 font-extrabold">
+                        <p>{details.category}</p>
+                    </div>
+                    <div className="text-3xl font-semibold">
+                        <span>{details.name}</span>
+                    </div>
                 </div>
             </div>
 

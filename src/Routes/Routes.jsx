@@ -26,6 +26,7 @@ import SignInPage from "../pages/SignIn/SignInPage";
 import SignUpPage from "../pages/SignUp/SignUpPage";
 import About from "../pages/About/About";
 import UnderConstructionPage from "../components/UnderConstruction/UnderConstructionPage/UnderConstructionPage";
+import GalleryPage from "../pages/Gallery/GalleryPage";
 
 
 
@@ -35,7 +36,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main></Main>,
-    errorElement: <UnderConstructionPage />,
+    // errorElement: <UnderConstructionPage />,
     children: [
 
       // visitor routes
@@ -54,9 +55,13 @@ export const router = createBrowserRouter([
         path: 'all',
         element: <AllListPage></AllListPage>
       },
+      // {
+      //   path: 'gallery',
+      //   element: isUnderConstruction ? <UnderConstructionPage /> : <Gallery />
+      // },
       {
         path: 'gallery',
-        element: isUnderConstruction ? <UnderConstructionPage /> : <Gallery />
+        element: <GalleryPage></GalleryPage>
       },
       {
         path: 'about',
