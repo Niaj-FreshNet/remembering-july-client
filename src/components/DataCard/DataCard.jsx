@@ -8,6 +8,8 @@ import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
 import { FacebookIcon, FacebookMessengerIcon, FacebookMessengerShareButton, FacebookShareButton, TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share';
 import { useNavigate } from 'react-router-dom';
+import { SlCalender } from 'react-icons/sl';
+import { CiShare1, CiShare2 } from 'react-icons/ci';
 
 const DataCard = ({ card, index }) => {
     const { _id, category, name, occupation, institution, date, image } = card;
@@ -43,7 +45,7 @@ const DataCard = ({ card, index }) => {
 
                 {/* Upper Content with Hover Effect */}
                 <CardContent sx={{ height: 210, transition: 'transform 0.3s ease' }} className='hover:translate-y-[-0.5rem]'>
-                    <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                    {/* <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                         {name}
                     </Typography>
                     <Typography gutterBottom variant="body1" component="div" sx={{ color: 'text.primary', marginTop: 1 }}>
@@ -54,30 +56,33 @@ const DataCard = ({ card, index }) => {
                     </Typography>
                     <Typography variant="body1" component="div" sx={{ color: 'text.secondary', marginY: 1 }}>
                         {date}
-                    </Typography>
+                    </Typography> */}
+
+                    <div className='flex flex-col justify-between h-full overflow-clip'>
+                        <div className='flex flex-col justify-around h-full overflow-hidden'>
+                            <div className='text-2xl text-black'>
+                                {name}
+                            </div>
+                            <div className='px-1'>
+                                <div className='text-sm mb-1 text-gray-700'>
+                                    {occupation}
+                                </div>
+                                <div className='text-sm'>
+                                    {institution}
+                                </div>
+                            </div>
+                        </div>
+                        <div className='flex items-center gap-2 text-base text-gray-600 mt-auto px-1'>
+                        <SlCalender /> {date}
+                        </div>
+                    </div>
                 </CardContent>
             </CardActionArea>
 
             {/* Actions */}
-            <CardActions className='flex justify-end'>
+            <CardActions className='flex justify-end items-center h-10 p-0 border-t-2 border-gray-100'>
                 {showShareOptions && (
-                    <div className="hidden md:flex md:space-x-2">
-                        <FacebookShareButton url={shareUrl} quote={title}>
-                            <FacebookIcon size={28} round />
-                        </FacebookShareButton>
-                        <FacebookMessengerShareButton url={shareUrl} quote={title}>
-                            <FacebookMessengerIcon size={28} round />
-                        </FacebookMessengerShareButton>
-                        <WhatsappShareButton url={shareUrl} title={title} separator=":: ">
-                            <WhatsappIcon size={28} round />
-                        </WhatsappShareButton>
-                        <TwitterShareButton url={shareUrl} title={title}>
-                            <XIcon size={28} round />
-                        </TwitterShareButton>
-                    </div>
-                )}
-                {showShareOptions && (
-                    <div className="flex space-x-1 md:hidden">
+                    <div className="hidden md:flex md:space-x-1">
                         <FacebookShareButton url={shareUrl} quote={title}>
                             <FacebookIcon size={24} round />
                         </FacebookShareButton>
@@ -92,8 +97,24 @@ const DataCard = ({ card, index }) => {
                         </TwitterShareButton>
                     </div>
                 )}
-                <Button onClick={handleShareClick} size="small" color="primary" sx={{ border: 1 }}>
-                    Share
+                {showShareOptions && (
+                    <div className="flex space-x-1 md:hidden">
+                        <FacebookShareButton url={shareUrl} quote={title}>
+                            <FacebookIcon size={20} round />
+                        </FacebookShareButton>
+                        <FacebookMessengerShareButton url={shareUrl} quote={title}>
+                            <FacebookMessengerIcon size={20} round />
+                        </FacebookMessengerShareButton>
+                        <WhatsappShareButton url={shareUrl} title={title} separator=":: ">
+                            <WhatsappIcon size={20} round />
+                        </WhatsappShareButton>
+                        <TwitterShareButton url={shareUrl} title={title}>
+                            <XIcon size={20} round />
+                        </TwitterShareButton>
+                    </div>
+                )}
+                <Button onClick={handleShareClick} >
+                    <CiShare2 className='text-2xl' />
                 </Button>
             </CardActions>
         </Card>

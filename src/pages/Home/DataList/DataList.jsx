@@ -15,7 +15,7 @@ const DataList = ({ cards }) => {
     });
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-x-3 gap-y-3 px-2 my-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 shadow-md gap-x-1 md:gap-x-3 gap-y-3 md:px-2 my-10">
             {
                 sortedCards.map((card, index) =>
                     <DataCard

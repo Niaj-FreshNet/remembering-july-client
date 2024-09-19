@@ -24,10 +24,10 @@ const NavDrawer = ({ open, onClose }) => {
 
     return (
         <div className={`fixed inset-0 z-50 transform ${open ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out bg-gray-800 bg-opacity-25`}>
-            <div onClick={onClose} className="w-3/5 md:w-4/5 h-screen absolute right-0">
+            <div onClick={onClose} className="w-1/2 md:w-4/5 h-screen absolute right-0">
             </div>
-            <div className="flex flex-row bg-white w-60 h-full shadow-xl pl-3 py-8">
-                <nav className="w-5/6">
+            <div className="flex flex-row bg-white w-56 h-full shadow-xl pl-5 py-8">
+                <nav className="w-5/6 ">
                     <ul className="flex flex-col space-y-2 text-base">
                         <li>
                             <NavLink

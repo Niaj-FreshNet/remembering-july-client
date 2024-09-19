@@ -30,9 +30,9 @@ const Home = () => {
                 </div>
             </div>
             <div className="max-w-screen-xl mx-auto">
-                <div className="flex justify-between items-center md:px-10 mt-16 md:mt-12 mb-0 md:mb-2 py-2">
+                <div className="flex justify-between items-center md:px-10 mt-20 md:mt-12 mb-0 md:mb-2 py-2">
                     <div className="p-4">
-                        <h2 className="text-2xl font-bold text-gray-100 md:text-4xl ">আন্দোলনে <br className="md:hidden" /> <span className="text-red-600 font-extrabold">শহীদদের</span> তালিকা</h2>
+                        <h2 className="text-3xl font-bold text-gray-100 md:text-4xl "> <span className="text-red-600 font-extrabold">শহীদি</span> মিছিল</h2>
                     </div>
                     <div className="mr-1">
                         {/* TODO: implement search functionalities not properly working */}
@@ -40,8 +40,8 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className="max-w-screen-2xl mx-auto divider divider-end -mt-4"></div>
-            <div className="max-w-screen-xl mx-auto px-2 md:px-10">
+            <div className="max-w-screen-2xl mx-auto divider divider-end -mt-6"></div>
+            <div className="max-w-screen-xl mx-auto px-1 -mt-4 md:px-10 ">
                 <DataSection filteredCards={filteredCards} loading={loading} />
             </div>
         </div>

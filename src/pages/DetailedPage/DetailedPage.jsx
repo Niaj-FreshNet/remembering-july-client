@@ -130,7 +130,7 @@ const DetailedPage = () => {
 
 
     return (
-        <div style={style} className="max-w-screen-lg mx-auto my-2 px-6 py-6 text-pretty">
+        <div style={style} className="max-w-screen-lg mx-auto px-6 py-6 text-pretty">
             {/* Mobile Header */}
             <div className="flex">
                 <div className="flex gap-4 items-start mx-auto mb-4 px-6 md:hidden">
@@ -245,39 +245,9 @@ const DetailedPage = () => {
                         </div>
                     </div>
 
-                    <div className="bg-gray-100 rounded-lg p-6">
-                        <div>
-                            <span className="death-info">শাহাদাতবরণ করেনঃ</span> <span className="death-info-value">{getDisplayValue(details.date, "------")}</span>
-                        </div>
-                        <div>
-                            <span className="death-info">যেখানে শহীদ হনঃ</span> <span className="death-info-value">{getDisplayValue(details.place, "------")}</span>
-                        </div>
-                        <br />
-                        <div className="bg-gray-200 rounded-lg p-2 space-y-2">
-                            <div className="death-info-details">যেভাবে শহীদ হয়েছেনঃ</div> <div className="death-info-details-value">{getDisplayValue(details.details, "------")}</div>
-                        </div>
-                        <br />
-                        <div>
-                            <span className="death-info">যে অস্ত্রের আঘাতে শহীদ হনঃ</span> <span className="death-info-value">{getDisplayValue(details.weaponUsed, "------")}</span>
-                        </div>
-                        <div>
-                            <span className="death-info">অপরাধী/খুনী যারাঃ</span> <span className="death-info-value">{getDisplayValue(details.culprit, "------")}</span>
-                        </div>
-                        <div>
-                            <span className="death-info">অপরাধীদের বিচারঃ</span> <span className="death-info-value">{getDisplayValue(details.caseDetails, "------")}</span>
-                        </div>
-                    </div>
+                    
 
-                    <div className="w-full md:w-1/2 space-y-8 md:ml-8">
-                        {/* Desktop Header */}
-                        <div className="hidden md:flex items-start mb-6">
-                            <div className="badge absolute rounded-lg bg-red-700 text-white px-2 py-4 mt-1 font-bold">
-                                <p>{getDisplayValue(details.category, "------")}</p>
-                            </div>
-                            <div className="text-3xl font-semibold px-6 ml-16">
-                                <span>{getDisplayValue(details.name, "------")}</span>
-                            </div>
-                        </div>
+                        
 
                         <div className="bg-gray-100 rounded-lg p-6">
                             <div>
@@ -311,7 +281,6 @@ const DetailedPage = () => {
                                 <div className="bio">সংক্ষিপ্ত জীবনীঃ</div> <div className="bio-value">{getDisplayValue(details.bio, "------")}</div>
                             </div>
                         </div>
-                    </div>
 
                 </div>
             </div>
