@@ -124,7 +124,7 @@ export const router = createBrowserRouter([
       {
         path: 'editInfo/:id',
         element: <AdminRoute><EditInfo></EditInfo></AdminRoute>,
-        loader: ({ params }) => fetch(`http://localhost:5000/cards/${params.id}`)
+        loader: ({ params }) => fetch(`https://remembering-july-server.vercel.app/cards/${params.id}`)
       },
       {
         path: 'allUsers',

@@ -30,7 +30,7 @@ const DetailedPage = () => {
     const style = {
         background: 'none', /* Removes the background image */
         backgroundColor: '#fff', /* Optional: Sets a solid color */
-      };
+    };
 
 
     useEffect(() => {
@@ -49,17 +49,31 @@ const DetailedPage = () => {
         return <div>No details found</div>;
     }
 
-    
-  // Function to determine if the URL is an image
-  const isImage = (url) => /\.(jpeg|jpg|gif|png|webp)$/i.test(url);
 
-  // Function to determine if the URL is a video
-  const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
+    const getDisplayValue = (value, defaultValue = "তথ্য নেই") => {
+        return value ? value : defaultValue;
+    };
 
-  // Flatten the media array if it's nested or has multiple levels
-  const flatMedia = details.media.flatMap((item) => 
-    Array.isArray(item) ? item : [item]
-  );
+
+    // Function to determine if the URL is an image
+    const isImage = (url) => /\.(jpeg|jpg|gif|png|webp)$/i.test(url);
+
+    // Function to determine if the URL is a video
+    const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
+
+    // Flatten the media array if it's nested or has multiple levels
+    const flatMedia = details.media && Array.isArray(details.media)
+        ? details.media.reduce((acc, item) => {
+            if (Array.isArray(item)) {
+                return acc.concat(item);
+            }
+            return acc.concat([item]);
+        }, [])
+        : [];
+
+    // // Log the contents of details.media and flatMedia for debugging
+    // console.log('details.media:', details.media);
+    // console.log('flatMedia:', flatMedia);
 
     const handleShareClick = () => {
         setShowShareOptions(!showShareOptions);
@@ -233,92 +247,130 @@ const DetailedPage = () => {
 
                     <div className="bg-gray-100 rounded-lg p-6">
                         <div>
-                            <span className="details-info">পিতার নামঃ</span> <span className="details-info-value">{details.father}</span>
+                            <span className="death-info">শাহাদাতবরণ করেনঃ</span> <span className="death-info-value">{getDisplayValue(details.date, "------")}</span>
                         </div>
                         <div>
-                            <span className="details-info">মাতার নামঃ</span> <span className="details-info-value">{details.mother}</span>
+                            <span className="death-info">যেখানে শহীদ হনঃ</span> <span className="death-info-value">{getDisplayValue(details.place, "------")}</span>
                         </div>
-                        <div>
-                            <span className="details-info">জন্মতারিখঃ</span> <span className="details-info-value">{details.dateOfBirth}</span>
-                        </div>
-                        <div>
-                            <span className="details-info">স্থায়ী ঠিকানাঃ</span> <span className="details-info-value">{details.permanentAddress}</span>
+                        <br />
+                        <div className="bg-gray-200 rounded-lg p-2 space-y-2">
+                            <div className="death-info-details">যেভাবে শহীদ হয়েছেনঃ</div> <div className="death-info-details-value">{getDisplayValue(details.details, "------")}</div>
                         </div>
                         <br />
                         <div>
-                            <span className="details-info">বয়সঃ</span> <span className="details-info-value">{details.age}</span>
+                            <span className="death-info">যে অস্ত্রের আঘাতে শহীদ হনঃ</span> <span className="death-info-value">{getDisplayValue(details.weaponUsed, "------")}</span>
                         </div>
                         <div>
-                            <span className="details-info">পেশাঃ</span> <span className="details-info-value">{details.occupation}</span>
+                            <span className="death-info">অপরাধী/খুনী যারাঃ</span> <span className="death-info-value">{getDisplayValue(details.culprit, "------")}</span>
                         </div>
                         <div>
-                            <span className="details-info">প্রতিষ্ঠানঃ</span> <span className="details-info-value">{details.institution}</span>
-                        </div>
-                        <div>
-                            <span className="details-info">যেখানে থাকতেনঃ</span> <span className="details-info-value">{details.address}</span>
+                            <span className="death-info">অপরাধীদের বিচারঃ</span> <span className="death-info-value">{getDisplayValue(details.caseDetails, "------")}</span>
                         </div>
                     </div>
-                    <div className="bg-gray-200 max-w-screen-sm rounded-lg p-4">
-                        <div className="space-y-2">
-                            <div className="bio">সংক্ষিপ্ত জীবনীঃ</div> <div className="bio-value">{details.bio}</div>
+
+                    <div className="w-full md:w-1/2 space-y-8 md:ml-8">
+                        {/* Desktop Header */}
+                        <div className="hidden md:flex items-start mb-6">
+                            <div className="badge absolute rounded-lg bg-red-700 text-white px-2 py-4 mt-1 font-bold">
+                                <p>{getDisplayValue(details.category, "------")}</p>
+                            </div>
+                            <div className="text-3xl font-semibold px-6 ml-16">
+                                <span>{getDisplayValue(details.name, "------")}</span>
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-100 rounded-lg p-6">
+                            <div>
+                                <span className="details-info">পিতার নামঃ</span> <span className="details-info-value">{getDisplayValue(details.father)}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">মাতার নামঃ</span> <span className="details-info-value">{getDisplayValue(details.mother)}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">জন্মতারিখঃ</span> <span className="details-info-value">{getDisplayValue(details.dateOfBirth)}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">স্থায়ী ঠিকানাঃ</span> <span className="details-info-value">{getDisplayValue(details.permanentAddress)}</span>
+                            </div>
+                            <br />
+                            <div>
+                                <span className="details-info">বয়সঃ</span> <span className="details-info-value">{getDisplayValue(details.age, "------")}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">পেশাঃ</span> <span className="details-info-value">{getDisplayValue(details.occupation, "------")}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">প্রতিষ্ঠানঃ</span> <span className="details-info-value">{getDisplayValue(details.institution, "------")}</span>
+                            </div>
+                            <div>
+                                <span className="details-info">যেখানে থাকতেনঃ</span> <span className="details-info-value">{getDisplayValue(details.address, "------")}</span>
+                            </div>
+                        </div>
+                        <div className="bg-gray-200 max-w-screen-sm rounded-lg p-4">
+                            <div className="space-y-2">
+                                <div className="bio">সংক্ষিপ্ত জীবনীঃ</div> <div className="bio-value">{getDisplayValue(details.bio, "------")}</div>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
             {/* Gallery Section */}
             <div className="max-w-screen-lg mx-auto px-2 py-8">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 underline">Inside Gallery</h2>
-      {flatMedia.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {flatMedia.map((item, index) => (
-            <div
-              key={index}
-              className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
-              onClick={() => setSelectedMedia(item)}
-            >
-              {isVideo(item) ? (
-                <video
-                  controls
-                  src={item}
-                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : isImage(item) ? (
-                <img
-                  src={item}
-                  alt={`Media ${index}`}
-                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-lg p-4">
-                  Unsupported media type
-                </div>
-              )}
-              {/* Hover effect overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">Preview</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-center text-gray-600">No media available.</p>
-      )}
+                <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 underline">Inside Gallery</h2>
+                {flatMedia.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                        {flatMedia.map((item, index) => (
+                            <div
+                                key={index}
+                                className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+                                onClick={() => setSelectedMedia(item)}
+                            >
+                                {isVideo(item) ? (
+                                    <video
+                                        controls
+                                        src={item}
+                                        className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                ) : isImage(item) ? (
+                                    <img
+                                        src={item}
+                                        alt={`Media ${index}`}
+                                        className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-lg p-4">
+                                        Unsupported media type
+                                    </div>
+                                )}
+                                {/* Hover effect overlay */}
+                                <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <span className="text-white font-bold text-lg">Preview</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-gray-600">No contents available.</p>
+                )}
 
-      {/* Modal Component */}
-      <MediaModal
-        open={Boolean(selectedMedia)}
-        onClose={() => setSelectedMedia(null)}
-        media={selectedMedia}
-      />
-    </div>
+                {/* Modal Component */}
+                <MediaModal
+                    open={Boolean(selectedMedia)}
+                    onClose={() => setSelectedMedia(null)}
+                    media={selectedMedia}
+                />
+            </div>
 
             {(
                 <>
                     <div className="max-w-screen-lg py-4 md:p-6 space-y-2">
                         <p className="font-bold underline">Info. Sources:</p>
                         <ul className="list-disc pl-6">
-                            <li className="italic"> {details.sourceLink} </li>
+                            <li className="italic">
+                                {getDisplayValue(details.sourceLink, "তথ্য নেই")}
+                            </li>
                         </ul>
                     </div>
                 </>
@@ -333,9 +385,9 @@ const DetailedPage = () => {
                                     Edit Info
                                 </button>
                             </Link>
-            <Button onClick={() => handleReviewCard()} className="btn btn-ghost btn-md">
-                    <GoUnverified className="text-4xl text-red-600" />
-                </Button>
+                            <Button onClick={() => handleReviewCard()} className="btn btn-ghost btn-md">
+                                <GoUnverified className="text-4xl text-red-600" />
+                            </Button>
                         </div>
                     </> : <>
                         <span></span>

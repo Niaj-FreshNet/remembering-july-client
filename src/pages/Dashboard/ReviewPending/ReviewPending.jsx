@@ -55,26 +55,26 @@ const ReviewPending = () => {
     }
 
 
-// Function to determine if the URL is an image
-const isImage = (url) => /\.(jpeg|jpg|gif|png|webp)$/i.test(url);
+    // Function to determine if the URL is an image
+    const isImage = (url) => /\.(jpeg|jpg|gif|png|webp)$/i.test(url);
 
-// Function to determine if the URL is a video
-const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
+    // Function to determine if the URL is a video
+    const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
 
-// Flatten the media array using reduce
-// Ensure details.media is an array before using reduce
-const flatMedia = details.media && Array.isArray(details.media)
-  ? details.media.reduce((acc, item) => {
-      if (Array.isArray(item)) {
-        return acc.concat(item);
-      }
-      return acc.concat([item]);
-    }, [])
-  : [];
+    // Flatten the media array using reduce
+    // Ensure details.media is an array before using reduce
+    const flatMedia = details.media && Array.isArray(details.media)
+        ? details.media.reduce((acc, item) => {
+            if (Array.isArray(item)) {
+                return acc.concat(item);
+            }
+            return acc.concat([item]);
+        }, [])
+        : [];
 
-// Log the contents of details.media and flatMedia for debugging
-console.log('details.media:', details.media);
-console.log('flatMedia:', flatMedia);
+    // // Log the contents of details.media and flatMedia for debugging
+    // console.log('details.media:', details.media);
+    // console.log('flatMedia:', flatMedia);
 
 
     const handleButtonClick = (card) => {
@@ -127,10 +127,11 @@ console.log('flatMedia:', flatMedia);
     };
 
     const columns = [
-        { field: 'id', headerName: 'ক্রম', width: 55,
+        {
+            field: 'id', headerName: 'ক্রম', width: 55,
             renderCell: (params) => (
                 <MuiLink onClick={() => navigate(`/info/${params.row._id}`)} className="font-bold" sx={{ cursor: 'pointer' }}>
-                    {params.value}          
+                    {params.value}
                 </MuiLink>
             ),
         },
@@ -163,16 +164,16 @@ console.log('flatMedia:', flatMedia);
                     ) : (
                         <Typography variant="body2">No media</Typography>
                     )}
-            
+
                     {/* Popup for Full-Size Media */}
                     <Dialog open={Boolean(selectedMedia)} onClose={() => setSelectedMedia(null)} fullWidth maxWidth="md">
                         <DialogTitle className="border-b-2 border-gray-100 flex justify-between items-center">
                             <div className="badge rounded-lg bg-red-700 text-white px-2 py-4 mt-2 font-extrabold">
                                 <p>{params.row.category}</p>
                             </div>
-                                <div className="md:hidden">
-                                    <p className="text-sm italic">Last updated: {params.row.submissionDate}</p>
-                                </div>
+                            <div className="md:hidden">
+                                <p className="text-sm italic">Last updated: {params.row.submissionDate}</p>
+                            </div>
                             <IconButton
                                 color="inherit"
                                 onClick={() => setSelectedMedia(null)}
@@ -189,7 +190,7 @@ console.log('flatMedia:', flatMedia);
                                         <span>{params.row.name}</span>
                                     </div>
                                 </div>
-            
+
                                 {/* Main Content */}
                                 <div className="md:flex md:justify-center md:px-3 md:space-x-8">
                                     {/* Left Column (Image and Details) */}
@@ -220,7 +221,7 @@ console.log('flatMedia:', flatMedia);
                                             <div className="death-info">অপরাধীদের বিচারঃ <span className="death-info-value">{params.row.caseDetails}</span></div>
                                         </div>
                                     </div>
-            
+
                                     {/* Right Column (Name and Biography) */}
                                     <div className="w-full md:w-1/2 space-y-8">
                                         {/* Desktop Header */}
@@ -229,7 +230,7 @@ console.log('flatMedia:', flatMedia);
                                                 <span>{params.row.name}</span>
                                             </div>
                                         </div>
-            
+
                                         <div className="bg-gray-100 rounded-lg p-4">
                                             <div className="details-info">পিতার নামঃ <span className="details-info-value">{params.row.father}</span></div>
                                             <div className="details-info">মাতার নামঃ <span className="details-info-value">{params.row.mother}</span></div>
@@ -249,71 +250,82 @@ console.log('flatMedia:', flatMedia);
                                         </div>
                                     </div>
                                 </div>
-            
+
                                 {/* Gallery Section */}
-    <div className="max-w-screen-lg mx-auto px-2 py-8">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 underline">Inside Gallery</h2>
-      {flatMedia.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {flatMedia.map((item, index) => (
-            <div
-              key={index}
-              className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
-              onClick={() => setSelectedGallery(item)}
-            >
-              {isVideo(item) ? (
-                <video
-                  controls
-                  src={item}
-                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : isImage(item) ? (
-                <img
-                  src={item}
-                  alt={`Media ${index}`}
-                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-lg p-4">
-                  Unsupported media type
-                </div>
-              )}
-              {/* Hover effect overlay */}
-              <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">Preview</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-center text-gray-600">No media available.</p>
-      )}
+                                <div className="max-w-screen-lg mx-auto px-2 py-8">
+                                    <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 underline">Gallery</h2>
+                                    {flatMedia.length > 0 ? (
+                                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                                            {flatMedia.map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+                                                    onClick={() => setSelectedGallery(item)}
+                                                >
+                                                    {isVideo(item) ? (
+                                                        <video
+                                                            controls
+                                                            src={item}
+                                                            className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    ) : isImage(item) ? (
+                                                        <img
+                                                            src={item}
+                                                            alt={`Media ${index}`}
+                                                            className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-lg p-4">
+                                                            Unsupported media type
+                                                        </div>
+                                                    )}
+                                                    {/* Hover effect overlay */}
+                                                    <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                        <span className="text-white font-bold text-lg">Preview</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-center text-gray-600">
+                                            <MuiLink onClick={() => navigate(`/info/${params.row._id}`)} className="font-bold" sx={{ cursor: 'pointer' }}>
+                                                Check inside the gallery
+                                            </MuiLink>
+                                        </p>
+                                    )}
 
-      {/* Modal Component */}
-      <MediaModal
-        open={Boolean(selectedGallery)}
-        onClose={() => setSelectedGallery(null)}
-        media={selectedGallery}
-      />
-    </div>
+                                    {/* Modal Component */}
+                                    <MediaModal
+                                        open={Boolean(selectedGallery)}
+                                        onClose={() => setSelectedGallery(null)}
+                                        media={selectedGallery}
+                                    />
+                                </div>
+
+                                <div className="max-w-screen-lg py-4 md:p-6 space-y-2">
+                                    <p className="font-bold underline">Info. Sources:</p>
+                                    <ul className="list-disc pl-6">
+                                        <li className="italic"> {params.row.sourceLink} </li>
+                                    </ul>
+                                </div>
 
 
-            
+
                             </div>
                         </DialogContent>
                         <DialogTitle className="border-t-2 border-gray-100 flex justify-between items-center">
-                                    <Link to={`/dashboard/editInfo/${params.row._id}`}>
-                                        <button className="btn btn-error btn-sm px-4 py-2 text-white rounded">
-                                            Edit Info
-                                        </button>
-                                    </Link>
-                                    <Button onClick={() => handleButtonClick(params.row)} className="btn btn-ghost btn-sm bg-slate-400">
-                                           <GoUnverified className="text-3xl text-red-600 -mt-1" />
-                                    </Button>
+                            <Link to={`/dashboard/editInfo/${params.row._id}`}>
+                                <button className="btn btn-error btn-sm px-4 py-2 text-white rounded">
+                                    Edit Info
+                                </button>
+                            </Link>
+                            <Button onClick={() => handleButtonClick(params.row)} className="btn btn-ghost btn-sm bg-slate-400">
+                                <GoUnverified className="text-3xl text-red-600 -mt-1" />
+                            </Button>
                         </DialogTitle>
                     </Dialog>
                 </div>
-            ),                  
+            ),
         },
         { field: 'date', headerName: 'তারিখ', width: 150 },
         { field: 'place', headerName: 'ঘটনাস্থল', width: 200 },

@@ -34,7 +34,7 @@ export default useAdmin;
 //         queryKey: [user?.email, 'isAdmin'],
 //         queryFn: async () => {
 //             if (!user?.email) return false; // Handle the case where user is not available
-//             const res = await axios.get(`http://localhost:5000/users/admin/${user.email}`);
+//             const res = await axios.get(`https://remembering-july-server.vercel.app/users/admin/${user.email}`);
 //             console.log('Admin check response:', res.data);
 //             return res.data?.admin;
 //         },

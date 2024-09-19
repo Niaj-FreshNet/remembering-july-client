@@ -12,7 +12,7 @@ const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_ke
 
 const Gallery = () => {
     const { user } = useAuth();
-    // const axiosPublic = useAxiosPublic();
+    const axiosPublic = useAxiosPublic();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const { control, register, handleSubmit, reset, formState: { errors } } = useForm({
@@ -43,7 +43,7 @@ const Gallery = () => {
 
             const { images, ...otherData } = data;
 
-            const result = await axios.post('http://localhost:5000/gallery', {
+            const result = await axiosPublic.post('/gallery', {
                 ...otherData,
                 imageUrls
             });
@@ -60,7 +60,7 @@ const Gallery = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/gallery');
+                const response = await axiosPublic.get('/gallery');
                 setData(response.data);
                 console.log(response.data);
             } catch (error) {
