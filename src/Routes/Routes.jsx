@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Main></Main>,
-    // errorElement: <UnderConstructionPage />,
+    errorElement: <UnderConstructionPage />,
     children: [
 
       // visitor routes
@@ -76,18 +76,18 @@ export const router = createBrowserRouter([
         element: <SignUpPage></SignUpPage>
       },
 
-      // user routes (forms)
+      // user routes (forms) ---------------->>>> changed to visitor routes
       {
         path: 'shaheedForm',
-        element: <PrivateRoute><FormShaheed></FormShaheed></PrivateRoute>
+        element: <FormShaheed></FormShaheed> 
       },
       {
         path: 'injuredForm',
-        element: <PrivateRoute><FormInjured></FormInjured></PrivateRoute>
+        element: <FormInjured></FormInjured> 
       },
       {
         path: 'missingForm',
-        element: <PrivateRoute><FormMissing></FormMissing></PrivateRoute>
+        element: <FormMissing></FormMissing> 
       }
     ]
   },
