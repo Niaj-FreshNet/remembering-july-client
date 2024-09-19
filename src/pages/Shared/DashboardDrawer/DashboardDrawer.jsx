@@ -3,6 +3,7 @@ import { Badge, Button } from '@mui/material';
 import useAdmin from '../../../hooks/useAdmin';
 import useAuth from '../../../hooks/useAuth';
 import usePending from '../../../hooks/usePending';
+import { PiSignOutBold } from 'react-icons/pi';
 
 
 const DashboardDrawer = ({ open, onClose }) => {
@@ -21,7 +22,7 @@ const DashboardDrawer = ({ open, onClose }) => {
         <div className={`fixed inset-0 z-50 transform ${open ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out bg-gray-800 bg-opacity-25`}>
             <div onClick={onClose} className="w-3/5 md:w-4/5 h-screen absolute right-0">
             </div>
-            <div className="flex flex-row bg-white w-60 h-full shadow-xl pl-6 pr-2 py-8">
+            <div className="flex flex-row bg-white w-60 h-full shadow-xl pl-3 py-8">
                 <nav className="w-5/6">
                     <ul className="flex flex-col space-y-2 text-base">
                         <li>
@@ -98,7 +99,6 @@ const DashboardDrawer = ({ open, onClose }) => {
                                     <Button
                                         variant={isActive ? "contained" : "outlined"}
                                         color={isActive ? "success" : "primary"}
-                                        className="w-full"
                                     >
                                         All Users
                                     </Button>
@@ -108,7 +108,7 @@ const DashboardDrawer = ({ open, onClose }) => {
                     </ul>
                     <div className="mt-4">
                         {user ? (
-                            <button onClick={handleLogOut} className="btn">Sign Out</button>
+                            <button onClick={handleLogOut} className="btn">Sign Out <PiSignOutBold /></button>
                         ) : (
                             <button><Link to="/login" className="btn">Sign In</Link></button>
                         )}
@@ -131,7 +131,7 @@ const DashboardDrawer = ({ open, onClose }) => {
                         </NavLink>
                     </div>
                 </nav>
-                <button onClick={onClose} className="btn rounded-btn text-3xl border-2 border-gray-300 ml-2">X</button>
+                <button onClick={onClose} className="absolute btn btn-lg right-5 top-10 glass rounded-btn text-4xl text-white border-2 border-gray-300 hover:bg-gray-900 ">X</button>
             </div>
         </div>
     );

@@ -2,10 +2,10 @@
 const Footer = () => {
     return (
         <div>
-            <footer className="footer footer-center bg-base-300 px-5 md:px-10 py-6">
+            <footer className="footer footer-center glass px-5 md:px-10 py-6">
                 <div>
                     <svg className="mb-2"
-                        fill="#991b1b" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
+                        fill="#FCA5A5" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
                         width="60px" height="60px" viewBox="0 0 191.107 191.107"
                         xmlSpace="preserve">
                         <g>
@@ -91,12 +91,12 @@ const Footer = () => {
                         </g>
                     </svg>
                     <div>
-                        <p className="font-bold text-pretty text-red-900">
+                        <p className="text-pretty text-red-300">
                             স্বৈরাচারীর গুলির সামনেও যারা মাথা নত করেনি তারাই বীর। <br /> "জুলাই-আগষ্ট গণহত্যা ২০২৪" -এর শহীদ, আহত ও নিখোঁজ ভাই-বোনদের প্রকৃত তথ্য লেখা থাক পৃথিবার ইতিহাসে।
                         </p>
                     </div>
                 </div>
-                <nav className="md:grid md:grid-flow-col md:gap-4 text-black">
+                <nav className="md:grid md:grid-flow-col md:gap-4 text-gray-200">
                     <a href="https://www.genocide2024.info" className="link link-hover">হোম</a>
                     <a href="https://www.genocide2024.info/allList" className="link link-hover">সকল তালিকা</a>
                     <a href="https://www.genocide2024.info/gallery" className="link link-hover">জুলাই-২৪ গ্যালারী</a>
@@ -104,7 +104,7 @@ const Footer = () => {
                     <a href="https://www.genocide2024.info/about" className="link link-hover">বিস্তারিত</a>
                 </nav>
                 <div>
-                    <div className="grid grid-flow-col gap-4 text-black">
+                    <div className="grid grid-flow-col gap-4 text-gray-200">
                         <a href="https://www.x.com/remembering-july">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -139,7 +139,7 @@ const Footer = () => {
                             </svg>
                         </a>
                     </div>
-                    <p className="text-black">Developed with Respect © {new Date().getFullYear()}</p>
+                    <p className="text-white">Developed with Respect © {new Date().getFullYear()}</p>
                 </div>
             </footer>
         </div >

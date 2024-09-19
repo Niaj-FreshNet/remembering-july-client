@@ -10,6 +10,11 @@ import { CiShare2 } from "react-icons/ci";
 import { FaFacebook } from "react-icons/fa";
 import dayjs from "dayjs";
 import Spinner from "./Spinner";
+import MediaModal from "./MediaModal";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Swal from 'sweetalert2';
+import { GoUnverified } from "react-icons/go";
+
 
 const DetailedPage = () => {
 
@@ -18,13 +23,21 @@ const DetailedPage = () => {
     const [details, setDetails] = useState(null);
     const [isAdmin, isAdminLoading] = useAdmin();
     const [showShareOptions, setShowShareOptions] = React.useState(false);
+    const [selectedMedia, setSelectedMedia] = useState(null);
+    const axiosPublic = useAxiosPublic();
+
+
+    const style = {
+        background: 'none', /* Removes the background image */
+        backgroundColor: '#fff', /* Optional: Sets a solid color */
+      };
 
 
     useEffect(() => {
         if (!loading) {
             const foundDetails = cards.find((card) => card._id === id);
             setDetails(foundDetails || {});
-            console.log(foundDetails)
+            // console.log(foundDetails)
         }
     }, [cards, loading, id]);
 
@@ -36,6 +49,17 @@ const DetailedPage = () => {
         return <div>No details found</div>;
     }
 
+    
+  // Function to determine if the URL is an image
+  const isImage = (url) => /\.(jpeg|jpg|gif|png|webp)$/i.test(url);
+
+  // Function to determine if the URL is a video
+  const isVideo = (url) => /\.(mp4|webm|ogg|mov)$/i.test(url);
+
+  // Flatten the media array if it's nested or has multiple levels
+  const flatMedia = details.media.flatMap((item) => 
+    Array.isArray(item) ? item : [item]
+  );
 
     const handleShareClick = () => {
         setShowShareOptions(!showShareOptions);
@@ -46,10 +70,53 @@ const DetailedPage = () => {
     const title = `${details.name} - ${details.category} at ${details.date}`;
 
 
+    const handleReviewCard = (card) => {
+        Swal.fire({
+            title: 'Please check all info before confirmed',
+            showDenyButton: true,
+            confirmButtonText: 'Accept',
+            denyButtonText: 'Decline',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosPublic.patch(`/cards/${card._id}`, { status: 'verified' }).then((res) => {
+                    if (res.data.modifiedCount > 0) {
+                        refetch();
+                        Swal.fire('Verified', '', 'success');
+                    } else if (res.data.matchedCount === 0) {
+                        Swal.fire('Failed! Try again', '', 'error');
+                    }
+                });
+            } else if (result.isDenied) {
+                Swal.fire({
+                    title: 'Select reason for declining',
+                    input: 'select',
+                    inputOptions: {
+                        fake: 'Fake',
+                        repeat: 'Repeat',
+                        inconvenience: 'Inconvenience'
+                    },
+                    inputPlaceholder: 'Select a reason',
+                    showCancelButton: true,
+                }).then((declineResult) => {
+                    if (declineResult.isConfirmed) {
+                        const status = declineResult.value;
+                        axiosPublic.patch(`/cards/${card._id}`, { status }).then((res) => {
+                            if (res.data.modifiedCount > 0) {
+                                refetch();
+                                Swal.fire('Declined', '', 'success');
+                            } else if (res.data.matchedCount === 0) {
+                                Swal.fire('Failed! Try again', '', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    };
 
 
     return (
-        <div className="max-w-screen-lg mx-auto my-2 px-6 py-6 text-pretty">
+        <div style={style} className="max-w-screen-lg mx-auto my-2 px-6 py-6 text-pretty">
             {/* Mobile Header */}
             <div className="flex">
                 <div className="flex gap-4 items-start mx-auto mb-4 px-6 md:hidden">
@@ -200,28 +267,55 @@ const DetailedPage = () => {
             </div>
 
             {/* Gallery Section */}
-            {details.images && details.images.length > 0 && (
-                <>
-                    <div className="max-w-screen-lg mx-auto px-6 py-8">
-                        <h2 className="text-2xl font-semibold mb-6 text-center">গ্যালারী</h2>
-                        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                            {/* Example Image */}
-                            {details.images.map((image, index) => (
-                                <div key={index} className="relative overflow-hidden rounded-lg">
-                                    <img
-                                        src={image.src}
-                                        alt={`Martyr Image ${index + 1}`}
-                                        className="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </>
-            )}
+            <div className="max-w-screen-lg mx-auto px-2 py-8">
+      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 underline">Inside Gallery</h2>
+      {flatMedia.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {flatMedia.map((item, index) => (
+            <div
+              key={index}
+              className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+              onClick={() => setSelectedMedia(item)}
+            >
+              {isVideo(item) ? (
+                <video
+                  controls
+                  src={item}
+                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : isImage(item) ? (
+                <img
+                  src={item}
+                  alt={`Media ${index}`}
+                  className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-600 rounded-lg p-4">
+                  Unsupported media type
+                </div>
+              )}
+              {/* Hover effect overlay */}
+              <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <span className="text-white font-bold text-lg">Preview</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-600">No media available.</p>
+      )}
+
+      {/* Modal Component */}
+      <MediaModal
+        open={Boolean(selectedMedia)}
+        onClose={() => setSelectedMedia(null)}
+        media={selectedMedia}
+      />
+    </div>
+
             {(
                 <>
-                    <div className="max-w-screen-lg p-4 md:p-6 space-y-2">
+                    <div className="max-w-screen-lg py-4 md:p-6 space-y-2">
                         <p className="font-bold underline">Info. Sources:</p>
                         <ul className="list-disc pl-6">
                             <li className="italic"> {details.sourceLink} </li>
@@ -232,13 +326,16 @@ const DetailedPage = () => {
             {
                 isAdmin ?
                     <>
-                        <div className="max-w-screen-2xl text-center mt-6">
+                        <div className="max-w-screen-2xl flex justify-around text-center mt-6">
                             {/* <li className="font-bold italic underline"><Link to={`/dashboard/editInfo/${_id}`}>Edit Info</Link></li> */}
                             <Link to={`/dashboard/editInfo/${details._id}`}>
                                 <button className="btn btn-error px-4 py-2 text-white rounded">
                                     Edit Info
                                 </button>
                             </Link>
+            <Button onClick={() => handleReviewCard()} className="btn btn-ghost btn-md">
+                    <GoUnverified className="text-4xl text-red-600" />
+                </Button>
                         </div>
                     </> : <>
                         <span></span>

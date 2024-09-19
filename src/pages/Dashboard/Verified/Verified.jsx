@@ -86,7 +86,7 @@ const Verified = () => {
 
     const [cards, loading, refetch] = useCards();
 
-    const verifiedCards = cards.filter(card => ['verified'].includes(card.status));
+    const verifiedCards = cards.filter(card => card.status === 'verified');
 
 
     const columns = [
@@ -145,7 +145,7 @@ const Verified = () => {
         <Box padding={1} bgcolor="background.paper">
 
             <Helmet>
-                <title>Verified Forms - GENOCIDE</title>
+                <title>Verified Forms - GENOCIDE 2024</title>
             </Helmet>
 
             <Box display="flex" justifyContent="center" mt={1} mb={2}>

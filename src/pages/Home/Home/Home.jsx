@@ -11,14 +11,15 @@ const Home = () => {
     const [filteredCards, setFilteredCards] = useState([]);
 
     useEffect(() => {
-        // Initialize with all cards if no filter is applied
-        setFilteredCards(cards);
-    }, [cards]);
+        if (cards !== filteredCards) {
+            setFilteredCards(cards);
+        }
+    }, [cards, filteredCards]);
 
     return (
         <div>
             <Helmet>
-                <title>Home - GENOCIDE</title>
+                <title>Home - GENOCIDE 2024</title>
             </Helmet>
             <div className="max-w-screen-2xl mx-auto relative">
                 <div className="">
@@ -31,7 +32,7 @@ const Home = () => {
             <div className="max-w-screen-xl mx-auto">
                 <div className="flex justify-between items-center md:px-10 mt-16 md:mt-12 mb-0 md:mb-2 py-2">
                     <div className="p-4">
-                        <h2 className="text-2xl font-bold text-gray-700 md:text-4xl ">আন্দোলনে <br className="md:hidden" /> <span className="text-red-700">শহীদদের</span> তালিকা</h2>
+                        <h2 className="text-2xl font-bold text-gray-100 md:text-4xl ">আন্দোলনে <br className="md:hidden" /> <span className="text-red-600 font-extrabold">শহীদদের</span> তালিকা</h2>
                     </div>
                     <div className="mr-1">
                         {/* TODO: implement search functionalities not properly working */}

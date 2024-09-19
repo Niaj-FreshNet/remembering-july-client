@@ -49,11 +49,14 @@ function AllListTab() {
                             '.MuiTab-root': {
                                 minWidth: { xs: 80, sm: 120, md: 150 },
                                 fontSize: { xs: '0.75rem', sm: '1rem', md: '1rem' },
-                                fontWeight: 'bold',
                                 padding: { xs: 1, sm: 2 },
                                 display: 'flex',
                                 flexDirection: 'column',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                color: 'white', // Inactive color
+                                '&.Mui-selected': {
+                                    color: 'red', // Active color
+                                }
                             },
                             '.MuiTabs-flexContainer': {
                                 justifyContent: 'center',

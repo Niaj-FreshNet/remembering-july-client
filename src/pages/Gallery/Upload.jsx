@@ -2,18 +2,19 @@ import { Controller, useForm } from 'react-hook-form';
 import useAuth from '../../hooks/useAuth';
 import { CircularProgress, Dialog, DialogContent, DialogTitle, Box, Button, LinearProgress, Snackbar, Alert, IconButton } from '@mui/material';
 import { useState } from 'react';
-import axios from 'axios';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { GridCloseIcon } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 
 const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dwl2slbiw/upload`;
 const uploadPreset = 'remembering-july-videos';
 
 const GalleryUpload = () => {
     const { user } = useAuth();
+    const axiosPublic = useAxiosPublic();
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [success, setSuccess] = useState(false);
@@ -45,7 +46,10 @@ const GalleryUpload = () => {
                 cloudinaryData.append('file', file);
                 cloudinaryData.append('upload_preset', uploadPreset);
 
-                const response = await axios.post(cloudinaryUrl, cloudinaryData, {
+                const response = await axiosPublic.post(cloudinaryUrl, cloudinaryData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
                     onUploadProgress: (progressEvent) => {
                         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                         setProgress(percentCompleted);
@@ -56,10 +60,11 @@ const GalleryUpload = () => {
             }
 
             const { media, ...otherData } = data;
-            await axios.post('http://localhost:5000/gallery', {
+            await axiosPublic.post('/gallery', {
                 ...otherData,
                 mediaUrls,
-                date: dayjs(data.date).format('D MMMM, YYYY')
+                date: dayjs(data.date).format('D MMMM, YYYY'),
+                status: mediaInfo.status
             });
 
             setSuccess(true);
@@ -73,12 +78,12 @@ const GalleryUpload = () => {
     };
 
     return (
-        <div className='max-w-screen-lg mx-auto mt-4 mb-8'>
+        <div className='max-w-screen-lg mx-auto mt-4 mb-8 px-4'>
             <div className='md:flex items-center md:justify-between glass rounded-md p-4 space-y-4'>
                 <div className=' text-white text-base text-center md:text-lg text-pretty'>
                     <p>"জুলাই-আগষ্ট গণহত্যা-২০২৪" সংশ্লিষ্ট গুরুত্বপূর্ণ ভিডিও বা ছবি থাকলে আপলোড করুন।</p>
                 </div>
-                <div className='text-center'>
+                <div className='text-center p-1'>
                     <Button variant="contained" size='large' color="primary" onClick={() => setOpen(true)}>Upload</Button>
                 </div>
             </div>
@@ -98,7 +103,7 @@ const GalleryUpload = () => {
                         <div className="rounded-[12px] bg-white shadow-sm mx-auto">
                             <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
                                 <div className="flex mb-2 -mt-2">
-                                    <span className="label label-text text-[16px]">Videos or Images Only</span>
+                                    <span className="label label-text text-[16px]">Videos & Images only</span>
                                     <span className="label label-text text-[16px] font-bold text-red-500">*</span>
                                 </div>
                                 <input
@@ -189,6 +194,7 @@ const GalleryUpload = () => {
                     Media uploaded successfully!
                 </Alert>
             </Snackbar>
+
         </div>
     );
 };

@@ -6,14 +6,19 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Swal from "sweetalert2";
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import { useState } from "react";
-import { CircularProgress, Dialog, DialogContent } from "@mui/material";
+import { CircularProgress, Dialog, DialogContent, Typography } from "@mui/material";
 import { Helmet } from "react-helmet-async";
+import ProgressBar from "../../../components/ProgressBard/ProgressBar";
+import axios from "axios";
 
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
+
+const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dwl2slbiw/upload`;
+const uploadPreset = 'remembering-july-videos';
 
 
 
@@ -26,9 +31,14 @@ const FormMissing = () => {
         }
     });
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [stage, setStage] = useState('Starting upload...'); // New state for stage
+
 
     const onSubmit = async (data) => {
-        setLoading(true); // Start loading
+        setLoading(true);
+        setProgress(0); // Start loading
+        setStage('Starting upload...');
 
         const missingAllInfo = {
             category: 'নিখোঁজ',
@@ -54,19 +64,52 @@ const FormMissing = () => {
         };
 
         try {
+            // Step 1: Upload the main image
             if (data.image && data.image.length > 0) {
-                // If an image is selected, upload it first
-                const imageFile = { image: data.image[0] };
-                const res = await axiosPublic.post(image_hosting_api, imageFile, {
+                setStage('Uploading main image...');
+                const formData = new FormData();
+                formData.append('image', data.image[0]);
+
+                const res = await axios.post(image_hosting_api, formData, {
                     headers: {
-                        'content-type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        setProgress(percentCompleted);
                     }
                 });
-                missingAllInfo.image = res.data.data.display_url; // Add the uploaded image URL to the form data
+
+                shaheedAllInfo.image = res.data.data.display_url; // Add the uploaded image URL to the form data
             }
 
-            // Submit the form data
-            const result = await axiosPublic.post('/cards', missingAllInfo);
+            // Step 2: Upload the media files
+            if (data.media && data.media.length > 0) {
+                setStage('Uploading media files...');
+                const mediaUrls = [];
+
+                for (let i = 0; i < data.media.length; i++) {
+                    const file = data.media[i];
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', uploadPreset);
+
+                    const response = await axios.post(cloudinaryUrl, formData, {
+                        onUploadProgress: (progressEvent) => {
+                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            setProgress(prev => prev + (percentCompleted / data.media.length));
+                        }
+                    });
+
+                    mediaUrls.push(response.data.secure_url);
+                }
+
+                shaheedAllInfo.media = mediaUrls; // Add the uploaded media URLs to the form data
+            }
+
+            // Step 3: Submit the form data
+            setStage('Submitting form data...');
+            const result = await axiosPublic.post('/cards', shaheedAllInfo);
 
             if (result.data.insertedId) {
                 reset();
@@ -97,14 +140,16 @@ const FormMissing = () => {
             });
         } finally {
             setLoading(false); // End loading
+            setProgress(0); // Reset progress
+            setStage('Starting upload...');
         }
-    }
+    };
 
 
     return (
         <div className="bg-[#F0EBF8]">
         <Helmet>
-            <title>নিখোঁজদের তথ্য দিন - GENOCIDE</title>
+            <title>নিখোঁজদের তথ্য দিন - GENOCIDE 2024</title>
         </Helmet>
             <div className="max-w-screen-lg mx-auto">
                 <form onSubmit={handleSubmit(onSubmit)} className="max-w-screen-lg flex flex-col gap-3">
@@ -130,7 +175,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Name"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             {errors.name && <span className="text-red-500">This field is required</span>}
                         </label>
                     </div>
@@ -179,7 +224,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Place"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             {errors.name && <span className="text-red-500">This field is required</span>}
                         </label>
                     </div>
@@ -193,7 +238,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="ঘটনার বর্ণনা লিখুন"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs">
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md">
                             </textarea>
                         </label>
                     </div>
@@ -209,7 +254,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="ছাত্র/কর্মজীবি/শ্রমিক/শিশু/অন্যান্য..."
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             {errors.name && <span className="text-red-500">This field is required</span>}
                         </label>
                     </div>
@@ -224,7 +269,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Type here"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -238,7 +283,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Type here"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -252,17 +297,30 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="পুলিশ/বিজিবি/র‍্যাব/ছাত্রলীগ/অন্যান্য..."
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
                         <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
                             <div className="flex mb-2 -mt-2">
-                                <span className="label label-text text-[16px]">নিখোঁজের একটি ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
+                                <span className="label label-text text-[16px]">নিখোঁজের একটি স্পষ্ট ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
                             </div>
                             <input
                                 {...register("image", { required: false })}
-                                type="file" className="file-input file-input-bordered w-full max-w-xs" />
+                                type="file" className="file-input file-input-bordered w-full max-w-md" />
+                        </label>
+                    </div>
+                    <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
+                        <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
+                            <div className="flex mb-2 -mt-2">
+                                <span className="label label-text text-[16px]">সংশ্লিষ্ট আরো ছবি বা ভিডিও থাকলে আপলোড করুন (Video and Image)</span>
+                            </div>
+                            <input
+                                multiple
+                                {...register("media", { required: false })}
+                                type="file"
+                                accept="image/*,video/*"
+                                className="file-input file-input-bordered w-full max-w-md" />
                         </label>
                     </div>
 
@@ -284,7 +342,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Father"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -298,7 +356,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Mother"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -312,7 +370,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Address"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -326,7 +384,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="permanent address"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -340,7 +398,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Date of birth"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -350,7 +408,7 @@ const FormMissing = () => {
                             </div>
                             <textarea
                                 placeholder="নিখোঁজের সংক্ষিপ্ত জীবনী লিখুন"
-                                className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-xs"
+                                className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-md"
                                 {...register("bio", { required: false })}
 
                                 defaultValue=''
@@ -364,7 +422,7 @@ const FormMissing = () => {
                                 <span className="label label-text text-[16px]">সোর্স লিংক (ঘটনা সংশ্লিষ্ট পোস্ট, ছবি বা ভিডিও লিংক)</span>
                             </div>
                             <textarea placeholder="নিউজ লিংক, বা ফেইসবুক পোস্ট লিংক"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs"
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md"
                                 {...register("sourceLink", { required: false })}
 
                                 defaultValue=''
@@ -383,7 +441,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Phone number"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -397,7 +455,7 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="https://www.facebook.com/....."
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
                     <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -411,21 +469,24 @@ const FormMissing = () => {
                                 defaultValue=''
                                 type="text"
                                 placeholder="Type here"
-                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                         </label>
                     </div>
 
-                    <button className="btn btn-success btn-lg text-2xl font-bold text-white my-4">SUBMIT</button>
+                    <button className="btn btn-success btn-lg text-2xl font-bold text-white mx-10 md:mx-24 mt-4 mb-12">SUBMIT</button>
                 </form>
-
+                {/* Show progress bar */}
+                {loading && <ProgressBar progress={progress} />}
                 {/* Loader Dialog */}
                 <Dialog open={loading}>
-                    <DialogContent>
-                        <div className="flex justify-center items-center">
-                            <CircularProgress />
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                <DialogContent>
+                    <div className="flex flex-col justify-center items-center">
+                        <CircularProgress variant="determinate" value={progress} />
+                        <Typography variant="body2" color="textSecondary">{`${Math.round(progress)}%`}</Typography>
+                        <Typography variant="body2" color="textSecondary">{stage}</Typography>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             </div >
         </div >

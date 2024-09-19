@@ -32,7 +32,7 @@ function App() {
     return (
         <div className='max-w-screen-xl mx-auto px-2 md:px-10'>
             <Helmet>
-                <title>All List - GENOCIDE</title>
+                <title>All List - GENOCIDE 2024</title>
             </Helmet>
             {
                 loading ? (

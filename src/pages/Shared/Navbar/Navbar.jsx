@@ -4,6 +4,8 @@ import useAuth from "../../../hooks/useAuth";
 import useAdmin from "../../../hooks/useAdmin";
 import NavDrawer from "../NavDrawer/NavDrawer";
 import SplidButton from "../../../components/SplidButton/SplidButton"
+import { PiSignOutBold } from "react-icons/pi";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const Navbar = () => {
     const { user, logOut } = useAuth();
@@ -53,15 +55,15 @@ const Navbar = () => {
 
             <>
                 {user ? (
-                    <li> <NavLink onClick={handleLogOut} className={({ isActive }) => isActive ? 'underline font-bold italic' : ' italic'}>Sign Out</NavLink></li>
+                    <li> <NavLink onClick={handleLogOut} className={({ isActive }) => isActive ? ' font-bold' : ''}>Sign Out <PiSignOutBold /></NavLink></li>
                 ) : (
-                    <li><NavLink to="/login" className={({ isActive }) => isActive ? 'underline font-bold italic' : ' italic'}>Sign In</NavLink></li>
+                    <li><NavLink to="/login" className={({ isActive }) => isActive ? ' font-bold' : ''}>Sign In</NavLink></li>
                 )}
             </>
 
             {isAdmin && (
                 <li className="font-bold italic underline">
-                    <NavLink to="/dashboard/reviewPending">Admin</NavLink>
+                    <NavLink to="/dashboard/reviewPending">Admin <MdAdminPanelSettings className="text-2xl"/></NavLink>
                 </li>
             )}
         </ul>

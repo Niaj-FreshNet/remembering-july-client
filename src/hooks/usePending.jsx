@@ -10,7 +10,7 @@ const usePending = () => {
         queryFn: async () => {
             const res = await axiosPublic.get('/cards');
             const pendingCards = res.data.filter(card =>
-                card.status === 'pending' || !['verified', 'fake', 'repeat', 'inconvenience'].includes(card.status)
+                card.status === 'pending'
             );
             return pendingCards;
         },

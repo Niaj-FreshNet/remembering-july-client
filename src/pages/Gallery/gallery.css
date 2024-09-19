@@ -1,7 +1,10 @@
-
+body{
+  background: url('../../assets/blackhand.webp') no-repeat center center;
+  background-size: cover;
+}
 
 .gallery-container {
-  padding: 20px;
+  padding: 20px 5px;
   position: relative;
   background: url('../../assets/blackhand.webp') no-repeat center center;
   background-size: cover;

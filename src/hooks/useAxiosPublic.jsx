@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-    baseURL: 'https://remembering-july-server.vercel.app',
+    baseURL: 'http://localhost:5000',
     headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'application/json'
     }
 })
 

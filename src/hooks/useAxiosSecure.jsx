@@ -6,7 +6,10 @@ import { useEffect } from "react";
 import useAdmin from "./useAdmin";
 
 const axiosSecure = axios.create({
-    baseURL: 'https://remembering-july-server.vercel.app'
+    baseURL: 'http://localhost:5000',
+    headers: {
+        'Content-Type': 'application/json'
+    }
 })
 
 const useAxiosSecure = () => {
@@ -36,13 +39,13 @@ const useAxiosSecure = () => {
     }, async (error) => {
         const status = error.response.status;
         console.log('status code in the interceptor', status);
-        // // for 401 or 403 logout the user and move the user to the login page
+        // for 401 or 403 logout the user and move the user to the login page
         // if (status === 401 || status === 403) {
         //     await logOut();
-        //     // navigate('/');
+        //     navigate('/');
         // }
         // return Promise.reject(error);
-    })
+    });
 
     return axiosSecure;
 };

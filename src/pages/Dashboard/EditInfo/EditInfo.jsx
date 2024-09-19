@@ -6,19 +6,25 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Swal from "sweetalert2";
-import { useLoaderData, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import { useState } from "react";
-import { CircularProgress, Dialog, DialogContent } from "@mui/material";
+import { CircularProgress, Dialog, DialogContent, Typography } from "@mui/material";
+import { Helmet } from "react-helmet-async";
+import ProgressBar from "../../../components/ProgressBard/ProgressBar";
+import axios from "axios";
+import { useLoaderData, useNavigate } from "react-router-dom";
 
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
 
+const cloudinaryUrl = `https://api.cloudinary.com/v1_1/dwl2slbiw/upload`;
+const uploadPreset = 'remembering-july-videos';
+
 
 
 const EditInfo = () => {
-    const { _id, category, name, date, place, details, underTreatment, nowHealth, govtHelp, culprit, occupation, institution, age, weaponUsed, deathBeforeTreatment, hospital, image, father, mother, address, permanentAddress, dateOfBirth, bio, familyContact, caseDone, caseDetails, sourceLink, fbId, relationWithInfoProvider } = useLoaderData();
+    const { _id, category, name, date, place, details, underTreatment, nowHealth, govtHelp, culprit, occupation, institution, age, weaponUsed, deathBeforeTreatment, hospital, image, media, father, mother, address, permanentAddress, dateOfBirth, bio, familyContact, caseDone, caseDetails, sourceLink, fbId, relationWithInfoProvider } = useLoaderData();
     const { user } = useAuth();
     const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
@@ -28,26 +34,37 @@ const EditInfo = () => {
         }
     });
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [stage, setStage] = useState('Starting upload...'); // New state for stage
+
 
     const onSubmit = async (data) => {
         Swal.fire({
-            title: 'Please check all info before confirmed',
+            title: 'Please check all info before confirming',
             showCancelButton: true,
             confirmButtonText: 'UPDATE and VERIFY',
             cancelButtonText: 'Cancel',
         }).then(async (result) => {
             if (result.isConfirmed) {
-                setLoading(true); // Start loading
+                setLoading(true);
+                setProgress(0); // Start loading
+                setStage('Starting upload...');
 
                 let imageUrl = image; // Default to existing image URL if no new image is uploaded
                 if (data.image && data.image.length > 0) {
                     try {
                         // Upload new image
-                        const imageFile = { image: data.image[0] };
-                        const res = await axiosPublic.post(image_hosting_api, imageFile, {
+                        setStage('Uploading image...');
+                        const formData = new FormData();
+                        formData.append('image', data.image[0]);
+                        const res = await axios.post(image_hosting_api, formData, {
                             headers: {
-                                'content-type': 'multipart/form-data'
-                            }
+                                'content-type': 'multipart/form-data',
+                            },
+                            onUploadProgress: (progressEvent) => {
+                                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                setProgress(percentCompleted);
+                            },
                         });
                         imageUrl = res.data.data.display_url; // Update image URL
                         console.log("Image Upload Response:", res.data);
@@ -59,12 +76,40 @@ const EditInfo = () => {
                             title: 'Image upload failed!',
                             text: 'There was an error uploading the image.',
                             showConfirmButton: true,
-                            timer: 3000
+                            timer: 3000,
                         });
                         setLoading(false);
                         return; // Exit the function if image upload fails
                     }
                 }
+
+                // :::::::::::::::CHATGPT:::::::::::::::: =>>>> hey chatgpt, here add another function works same as imageUrl for the mediaUrls. means which media URLs already have been submited, the should remain, and if new media will be upload then it should also include with the previous URLs. 
+
+                let mediaUrls = [...media]; // Retain existing media URLs
+                if (data.media && data.media.length > 0) {
+                    setStage('Uploading media files...');
+                    const newMediaUrls = [];
+
+                    for (let i = 0; i < data.media.length; i++) {
+                        const file = data.media[i];
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', uploadPreset);
+
+                        const response = await axios.post(cloudinaryUrl, formData, {
+                            onUploadProgress: (progressEvent) => {
+                                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                setProgress(prev => prev + (percentCompleted / data.media.length));
+                            },
+                        });
+
+                        newMediaUrls.push(response.data.secure_url);
+                    }
+
+                    mediaUrls = [...mediaUrls, ...newMediaUrls]; // Add new media URLs to existing ones
+                    Swal.fire('Media files uploaded successfully!');
+                }
+
 
                 // Prepare form data for submission
                 const allInfo = {
@@ -83,6 +128,7 @@ const EditInfo = () => {
                     deathBeforeTreatment: data.deathBeforeTreatment,
                     hospital: data.hospital,
                     image: imageUrl,  // Use the uploaded image URL or existing image URL
+                    media: mediaUrls, // Add the media URLs to the form data
                     father: data.father,
                     mother: data.mother,
                     address: data.address,
@@ -96,10 +142,11 @@ const EditInfo = () => {
                     fbId: data.fbId,
                     relationWithInfoProvider: data.relationWithInfoProvider,
                     submissionDate: dayjs().format('D MMMM, YYYY'),
-                    status: 'verified' // Add status field
+                    status: 'verified', // Add status field
                 };
 
                 try {
+                    setStage('Submitting data...');
                     // Submit the form data
                     const result = await axiosPublic.patch(`/cards/${_id}`, allInfo);
                     console.log("Update Response:", result.data);
@@ -136,15 +183,28 @@ const EditInfo = () => {
                     });
                 } finally {
                     setLoading(false); // End loading
+                    setStage('Upload completed'); // Final stage
                 }
             }
-        })
-    }
+        });
+    };
+
+
+    const mediaFormats = {
+        images: ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'],
+        videos: ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv']
+    };
+
+    const isImage = (url) => mediaFormats.images.some(ext => url.toLowerCase().endsWith(ext));
+    const isVideo = (url) => mediaFormats.videos.some(ext => url.toLowerCase().endsWith(ext));
+
 
 
     return (
-
         <div className="bg-[#F0EBF8]">
+            <Helmet>
+                <title>Update Informations - GENOCIDE 2024</title>
+            </Helmet>
             <div className="max-w-screen-lg mx-auto">
                 <div className=" rounded-b-[12px] bg-white shadow-sm w-4/5 mx-auto mb-6">
                     <div className="form-control w-full pl-8 pr-8 py-6 my-auto text-pretty">
@@ -225,7 +285,7 @@ const EditInfo = () => {
                                     defaultValue={name}
                                     type="text"
                                     placeholder="Name"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -275,7 +335,7 @@ const EditInfo = () => {
                                     defaultValue={place}
                                     type="text"
                                     placeholder="Place"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -289,7 +349,7 @@ const EditInfo = () => {
                                     defaultValue={details}
                                     type="text"
                                     placeholder="ঘটনার বর্ণনা লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md">
                                 </textarea>
                             </label>
                         </div>
@@ -304,7 +364,7 @@ const EditInfo = () => {
                                     defaultValue={culprit}
                                     type="text"
                                     placeholder="পুলিশ/বিজিবি/র‍্যাব/ছাত্রলীগ/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -319,7 +379,7 @@ const EditInfo = () => {
                                     defaultValue={occupation}
                                     type="text"
                                     placeholder="ছাত্র/কর্মজীবি/শ্রমিক/শিশু/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -334,7 +394,7 @@ const EditInfo = () => {
                                     defaultValue={institution}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -348,7 +408,7 @@ const EditInfo = () => {
                                     defaultValue={age}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -362,7 +422,7 @@ const EditInfo = () => {
                                     defaultValue={weaponUsed}
                                     type="text"
                                     placeholder="বুলেট/গ্রেনেড/টিয়ারশেল/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -399,37 +459,77 @@ const EditInfo = () => {
                                     defaultValue={hospital}
                                     type="text"
                                     placeholder="হাসপাতালের নাম লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs mt-2">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md mt-2">
                                 </textarea>
 
                             </div>
                         </div>
+
+                        {/* Image Upload Field */}
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
                             <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
                                 <div className="flex mb-2 -mt-2">
-                                    <span className="label label-text text-[16px]">শহীদের একটি ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
+                                    <span className="label label-text text-[16px]">শহীদের একটি স্পষ্ট ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
                                 </div>
-                                {/* Display existing image */}
-                                <div className=" md:flex justify-between items-start">
-
+                                <div className="md:flex justify-between items-start">
                                     <div className="mb-4">
                                         <label className="label font-bold">Upload New Image</label>
                                         <input
                                             {...register("image")}
                                             type="file"
-                                            className="file-input file-input-bordered w-full max-w-xs"
+                                            className="file-input file-input-bordered w-full max-w-md"
                                         />
                                     </div>
                                     {image && (
                                         <div className="mb-4">
                                             <label className="label font-bold">Existing Image</label>
-                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-xs" />
+                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-md" />
                                         </div>
                                     )}
                                 </div>
                                 {errors.image && <span className="text-red-500">This field is required</span>}
                             </div>
                         </div>
+
+                        {/* Media Upload Field */}
+                        <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto mt-6">
+                            <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
+                                <div className="flex mb-2 -mt-2">
+                                    <span className="label label-text text-[16px]">Upload New Media (Images/Videos)</span>
+                                </div>
+                                <input
+                                    {...register("media")}
+                                    type="file"
+                                    multiple
+                                    className="file-input file-input-bordered w-full max-w-md"
+                                />
+                                <div className="mt-3 -mb-2">
+                                    <label className="label font-bold">Existing Media</label>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {media && media.map((url, index) => (
+                                        <div key={index} className="relative group">
+                                            {isImage(url) && (
+                                                <img
+                                                    src={url}
+                                                    alt={`Media ${index}`}
+                                                    className="w-full h-auto rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            )}
+                                            {isVideo(url) && (
+                                                <video
+                                                    controls
+                                                    className="w-full h-auto rounded-lg object-cover"
+                                                >
+                                                    <source src={url} type={`video/${url.split('.').pop()}`} />
+                                                </video>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
 
                         {/* ------------------- Personal Information ------------------- */}
 
@@ -449,7 +549,7 @@ const EditInfo = () => {
                                     defaultValue={father}
                                     type="text"
                                     placeholder="Father"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -463,7 +563,7 @@ const EditInfo = () => {
                                     defaultValue={mother}
                                     type="text"
                                     placeholder="Mother"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -477,7 +577,7 @@ const EditInfo = () => {
                                     defaultValue={address}
                                     type="text"
                                     placeholder="Address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -491,7 +591,7 @@ const EditInfo = () => {
                                     defaultValue={permanentAddress}
                                     type="text"
                                     placeholder="permanent address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -505,7 +605,7 @@ const EditInfo = () => {
                                     defaultValue={dateOfBirth}
                                     type="text"
                                     placeholder="Date of birth"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -515,7 +615,7 @@ const EditInfo = () => {
                                 </div>
                                 <textarea
                                     placeholder="শহীদের সংক্ষিপ্ত জীবনী লিখুন"
-                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-xs"
+                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-md"
                                     {...register("bio", { required: false })}
 
                                     defaultValue={bio}
@@ -557,7 +657,7 @@ const EditInfo = () => {
                                     defaultValue={caseDetails}
                                     type="text"
                                     placeholder="মামলা সম্পর্কিত কিছু জানাতে চাইলে লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs mt-2">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md mt-2">
                                 </textarea>
                             </div>
                         </div>
@@ -567,7 +667,7 @@ const EditInfo = () => {
                                     <span className="label label-text text-[16px]">সোর্স লিংক (ঘটনা সংশ্লিষ্ট পোস্ট, ছবি বা ভিডিও লিংক)</span>
                                 </div>
                                 <textarea placeholder="নিউজ লিংক, বা ফেইসবুক পোস্ট লিংক"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs"
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md"
                                     {...register("sourceLink", { required: false })}
 
                                     defaultValue={sourceLink}
@@ -586,7 +686,7 @@ const EditInfo = () => {
                                     defaultValue={familyContact}
                                     type="text"
                                     placeholder="Phone number"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -600,7 +700,7 @@ const EditInfo = () => {
                                     defaultValue={fbId}
                                     type="text"
                                     placeholder="https://www.facebook.com/....."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -614,11 +714,11 @@ const EditInfo = () => {
                                     defaultValue={relationWithInfoProvider}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
 
-                        <button className="btn btn-error btn-lg text-2xl font-bold text-white my-4">UPDATE</button>
+                        <button className="btn btn-error btn-lg text-2xl font-bold text-white mx-10 md:mx-24 mt-4 mb-12">UPDATE</button>
                     </form>
                 )}
 
@@ -689,7 +789,7 @@ const EditInfo = () => {
                                     defaultValue={name}
                                     type="text"
                                     placeholder="Name"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -738,7 +838,7 @@ const EditInfo = () => {
                                     defaultValue={place}
                                     type="text"
                                     placeholder="Place"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -752,7 +852,7 @@ const EditInfo = () => {
                                     defaultValue={details}
                                     type="text"
                                     placeholder="ঘটনার বর্ণনা লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md">
                                 </textarea>
                             </label>
                         </div>
@@ -790,7 +890,7 @@ const EditInfo = () => {
                                     defaultValue={nowHealth}
                                     type="text"
                                     placeholder="বর্তমানে শারীরিক অবস্থা সম্পর্কে লিখুন..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs mt-2">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md mt-2">
                                 </textarea>
                             </div>
                         </div>
@@ -837,7 +937,7 @@ const EditInfo = () => {
                                     defaultValue={occupation}
                                     type="text"
                                     placeholder="ছাত্র/কর্মজীবি/শ্রমিক/শিশু/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -851,7 +951,7 @@ const EditInfo = () => {
                                     defaultValue={institution}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -864,7 +964,7 @@ const EditInfo = () => {
                                     defaultValue={age}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -877,7 +977,7 @@ const EditInfo = () => {
                                     defaultValue={culprit}
                                     type="text"
                                     placeholder="পুলিশ/বিজিবি/র‍্যাব/ছাত্রলীগ/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -890,33 +990,72 @@ const EditInfo = () => {
                                     defaultValue={weaponUsed}
                                     type="text"
                                     placeholder="বুলেট/গ্রেনেড/টিয়ারশেল/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
+
+                        {/* Image Upload Field */}
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
                             <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
                                 <div className="flex mb-2 -mt-2">
-                                    <span className="label label-text text-[16px]">আহতের একটি ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
+                                    <span className="label label-text text-[16px]">আহতের একটি স্পষ্ট ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
                                 </div>
-                                {/* Display existing image */}
-                                <div className=" md:flex justify-between items-start">
-
+                                <div className="md:flex justify-between items-start">
                                     <div className="mb-4">
                                         <label className="label font-bold">Upload New Image</label>
                                         <input
                                             {...register("image")}
                                             type="file"
-                                            className="file-input file-input-bordered w-full max-w-xs"
+                                            className="file-input file-input-bordered w-full max-w-md"
                                         />
                                     </div>
                                     {image && (
                                         <div className="mb-4">
                                             <label className="label font-bold">Existing Image</label>
-                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-xs" />
+                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-md" />
                                         </div>
                                     )}
                                 </div>
                                 {errors.image && <span className="text-red-500">This field is required</span>}
+                            </div>
+                        </div>
+
+                        {/* Media Upload Field */}
+                        <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto mt-6">
+                            <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
+                                <div className="flex mb-2 -mt-2">
+                                    <span className="label label-text text-[16px]">Upload New Media (Images/Videos)</span>
+                                </div>
+                                <input
+                                    {...register("media")}
+                                    type="file"
+                                    multiple
+                                    className="file-input file-input-bordered w-full max-w-md"
+                                />
+                                <div className="mt-3 -mb-2">
+                                    <label className="label font-bold">Existing Media</label>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {media && media.map((url, index) => (
+                                        <div key={index} className="relative group">
+                                            {isImage(url) && (
+                                                <img
+                                                    src={url}
+                                                    alt={`Media ${index}`}
+                                                    className="w-full h-auto rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            )}
+                                            {isVideo(url) && (
+                                                <video
+                                                    controls
+                                                    className="w-full h-auto rounded-lg object-cover"
+                                                >
+                                                    <source src={url} type={`video/${url.split('.').pop()}`} />
+                                                </video>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -938,7 +1077,7 @@ const EditInfo = () => {
                                     defaultValue={father}
                                     type="text"
                                     placeholder="Father"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -952,7 +1091,7 @@ const EditInfo = () => {
                                     defaultValue={mother}
                                     type="text"
                                     placeholder="Mother"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -966,7 +1105,7 @@ const EditInfo = () => {
                                     defaultValue={address}
                                     type="text"
                                     placeholder="Address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -980,7 +1119,7 @@ const EditInfo = () => {
                                     defaultValue={permanentAddress}
                                     type="text"
                                     placeholder="permanent address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -994,7 +1133,7 @@ const EditInfo = () => {
                                     defaultValue={dateOfBirth}
                                     type="text"
                                     placeholder="Date of birth"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1004,7 +1143,7 @@ const EditInfo = () => {
                                 </div>
                                 <textarea
                                     placeholder="শহীদের সংক্ষিপ্ত জীবনী লিখুন"
-                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-xs"
+                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-md"
                                     {...register("bio", { required: false })}
 
                                     defaultValue={bio}
@@ -1046,7 +1185,7 @@ const EditInfo = () => {
                                     defaultValue={caseDetails}
                                     type="text"
                                     placeholder="মামলা সম্পর্কিত কিছু জানাতে চাইলে লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs mt-2">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md mt-2">
                                 </textarea>
                             </div>
                         </div>
@@ -1056,7 +1195,7 @@ const EditInfo = () => {
                                     <span className="label label-text text-[16px]">সোর্স লিংক (ঘটনা সংশ্লিষ্ট পোস্ট, ছবি বা ভিডিও লিংক)</span>
                                 </div>
                                 <textarea placeholder="নিউজ লিংক, বা ফেইসবুক পোস্ট লিংক"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs"
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md"
                                     {...register("sourceLink", { required: false })}
 
                                     defaultValue={sourceLink}
@@ -1075,7 +1214,7 @@ const EditInfo = () => {
                                     defaultValue={familyContact}
                                     type="text"
                                     placeholder="Phone number"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1089,7 +1228,7 @@ const EditInfo = () => {
                                     defaultValue={fbId}
                                     type="text"
                                     placeholder="https://www.facebook.com/....."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1103,11 +1242,11 @@ const EditInfo = () => {
                                     defaultValue={relationWithInfoProvider}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
 
-                        <button className="btn btn-error btn-lg text-2xl font-bold text-white my-4">UPDATE</button>
+                        <button className="btn btn-error btn-lg text-2xl font-bold text-white mx-10 md:mx-24 mt-4 mb-12">UPDATE</button>
                     </form>
                 )}
 
@@ -1176,7 +1315,7 @@ const EditInfo = () => {
                                     defaultValue={name}
                                     type="text"
                                     placeholder="Name"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -1225,7 +1364,7 @@ const EditInfo = () => {
                                     defaultValue={place}
                                     type="text"
                                     placeholder="Place"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -1239,7 +1378,7 @@ const EditInfo = () => {
                                     defaultValue={details}
                                     type="text"
                                     placeholder="ঘটনার বর্ণনা লিখুন"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs">
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md">
                                 </textarea>
                             </label>
                         </div>
@@ -1255,7 +1394,7 @@ const EditInfo = () => {
                                     defaultValue={occupation}
                                     type="text"
                                     placeholder="ছাত্র/কর্মজীবি/শ্রমিক/শিশু/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                                 {errors.name && <span className="text-red-500">This field is required</span>}
                             </label>
                         </div>
@@ -1269,7 +1408,7 @@ const EditInfo = () => {
                                     defaultValue={institution}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1282,7 +1421,7 @@ const EditInfo = () => {
                                     defaultValue={age}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1295,33 +1434,72 @@ const EditInfo = () => {
                                     defaultValue={culprit}
                                     type="text"
                                     placeholder="পুলিশ/বিজিবি/র‍্যাব/ছাত্রলীগ/অন্যান্য..."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
+
+                        {/* Image Upload Field */}
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
                             <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
                                 <div className="flex mb-2 -mt-2">
-                                    <span className="label label-text text-[16px]">নিখোঁজের একটি ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
+                                    <span className="label label-text text-[16px]">নিখোঁজের একটি স্পষ্ট ছবি সংযুক্ত করুন (Only PNG/JPG)</span>
                                 </div>
-                                {/* Display existing image */}
-                                <div className=" md:flex justify-between items-start">
-
+                                <div className="md:flex justify-between items-start">
                                     <div className="mb-4">
                                         <label className="label font-bold">Upload New Image</label>
                                         <input
                                             {...register("image")}
                                             type="file"
-                                            className="file-input file-input-bordered w-full max-w-xs"
+                                            className="file-input file-input-bordered w-full max-w-md"
                                         />
                                     </div>
                                     {image && (
                                         <div className="mb-4">
                                             <label className="label font-bold">Existing Image</label>
-                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-xs" />
+                                            <img src={image} alt="Existing" className="w-[240px] h-[240px] rounded-lg max-w-md" />
                                         </div>
                                     )}
                                 </div>
                                 {errors.image && <span className="text-red-500">This field is required</span>}
+                            </div>
+                        </div>
+
+                        {/* Media Upload Field */}
+                        <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto mt-6">
+                            <div className="form-control w-full pl-8 pr-8 py-6 my-auto">
+                                <div className="flex mb-2 -mt-2">
+                                    <span className="label label-text text-[16px]">Upload New Media (Images/Videos)</span>
+                                </div>
+                                <input
+                                    {...register("media")}
+                                    type="file"
+                                    multiple
+                                    className="file-input file-input-bordered w-full max-w-md"
+                                />
+                                <div className="mt-3 -mb-2">
+                                    <label className="label font-bold">Existing Media</label>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {media && media.map((url, index) => (
+                                        <div key={index} className="relative group">
+                                            {isImage(url) && (
+                                                <img
+                                                    src={url}
+                                                    alt={`Media ${index}`}
+                                                    className="w-full h-auto rounded-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            )}
+                                            {isVideo(url) && (
+                                                <video
+                                                    controls
+                                                    className="w-full h-auto rounded-lg object-cover"
+                                                >
+                                                    <source src={url} type={`video/${url.split('.').pop()}`} />
+                                                </video>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -1343,7 +1521,7 @@ const EditInfo = () => {
                                     defaultValue={father}
                                     type="text"
                                     placeholder="Father"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1357,7 +1535,7 @@ const EditInfo = () => {
                                     defaultValue={mother}
                                     type="text"
                                     placeholder="Mother"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1371,7 +1549,7 @@ const EditInfo = () => {
                                     defaultValue={address}
                                     type="text"
                                     placeholder="Address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1385,7 +1563,7 @@ const EditInfo = () => {
                                     defaultValue={permanentAddress}
                                     type="text"
                                     placeholder="permanent address"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1399,7 +1577,7 @@ const EditInfo = () => {
                                     defaultValue={dateOfBirth}
                                     type="text"
                                     placeholder="Date of birth"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1409,7 +1587,7 @@ const EditInfo = () => {
                                 </div>
                                 <textarea
                                     placeholder="শহীদের সংক্ষিপ্ত জীবনী লিখুন"
-                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-xs"
+                                    className="textarea text-[14px] textarea-bordered textarea-md w-full max-w-md"
                                     {...register("bio", { required: false })}
 
                                     defaultValue={bio}
@@ -1423,7 +1601,7 @@ const EditInfo = () => {
                                     <span className="label label-text text-[16px]">সোর্স লিংক (ঘটনা সংশ্লিষ্ট পোস্ট, ছবি বা ভিডিও লিংক)</span>
                                 </div>
                                 <textarea placeholder="নিউজ লিংক, বা ফেইসবুক পোস্ট লিংক"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs"
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md"
                                     {...register("sourceLink", { required: false })}
 
                                     defaultValue={sourceLink}
@@ -1442,7 +1620,7 @@ const EditInfo = () => {
                                     defaultValue={familyContact}
                                     type="text"
                                     placeholder="Phone number"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1456,7 +1634,7 @@ const EditInfo = () => {
                                     defaultValue={fbId}
                                     type="text"
                                     placeholder="https://www.facebook.com/....."
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
                         <div className="rounded-[12px] bg-white shadow-sm w-4/5 mx-auto">
@@ -1470,20 +1648,24 @@ const EditInfo = () => {
                                     defaultValue={relationWithInfoProvider}
                                     type="text"
                                     placeholder="Type here"
-                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-xs" />
+                                    className="input text-[14px] border-b-2 border-slate-300 hover:border-dotted focus:border-blue-400 w-full max-w-md" />
                             </label>
                         </div>
 
-                        <button className="btn btn-error btn-lg text-2xl font-bold text-white my-4">UPDATE</button>
+                        <button className="btn btn-error btn-lg text-2xl font-bold text-white mx-10 md:mx-24 mt-4 mb-12">UPDATE</button>
                     </form>
                 )}
 
 
+                {/* Show progress bar */}
+                {loading && <ProgressBar progress={progress} />}
                 {/* Loader Dialog */}
                 <Dialog open={loading}>
                     <DialogContent>
-                        <div className="flex justify-center items-center">
-                            <CircularProgress />
+                        <div className="flex flex-col justify-center items-center">
+                            <CircularProgress variant="determinate" value={progress} />
+                            <Typography variant="body2" color="textSecondary">{`${Math.round(progress)}%`}</Typography>
+                            <Typography variant="body2" color="textSecondary">{stage}</Typography>
                         </div>
                     </DialogContent>
                 </Dialog>

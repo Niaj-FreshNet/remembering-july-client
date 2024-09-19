@@ -1,0 +1,77 @@
+.details-info, .death-info, .bio {
+    font-size: medium;
+    font-weight: 500;
+    color: rgb(87, 87, 87);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.details-info-value, .death-info-value, .bio-value {
+    font-size: medium;
+    font-weight: 500;
+    color: black;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.death-info-details {
+    font-size: medium;
+    font-weight: 600;
+    color: rgb(50, 50, 50);
+}
+
+.death-info-details-value {
+    font-size: medium;
+    font-weight: 500;
+    color: black;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.bio {
+    font-size: medium;
+    font-weight: 600;
+    color: rgb(50, 50, 50);
+}
+
+.bio-value {
+    font-size: medium;
+    font-weight: 500;
+    color: black;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.text-pretty {
+    font-family: sans-serif;
+}
+
+.btn {
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background-color: rgb(225, 7, 7), 210;
+}
+
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.hover\:shadow-xl:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.transition-shadow {
+    transition: box-shadow 0.3s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

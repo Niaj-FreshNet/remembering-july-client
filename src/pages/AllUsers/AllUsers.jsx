@@ -80,10 +80,10 @@ const AllUsers = () => {
     }
 
     return (
-        <Box paddingY={1} marig bgcolor="background.paper">
+        <Box paddingY={1} bgcolor="background.paper">
 
             <Helmet>
-                <title>All Users - GENOCIDE</title>
+                <title>All Users - GENOCIDE 2024</title>
             </Helmet>
 
             <div className="flex justify-center top-0 mb-4">

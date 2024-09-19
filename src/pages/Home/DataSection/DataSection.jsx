@@ -28,21 +28,7 @@ const DataSection = ({ filteredCards }) => {
 
     const [cards, loading] = useCards();
     const displayedCards = filteredCards.length > 0 ? filteredCards : cards;
-
-
-    // const [cards, setCards] = useState([]);
-    // const [loading, setLoading] = useState(true);
-
-    // useEffect(() => {
-    //     fetch('/card.json')
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             // console.log(data)
-    //             setCards(data);
-    //             setLoading(false);
-    //         })
-    // }, [])
-
+    
 
     return (
         <div>

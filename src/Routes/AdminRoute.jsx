@@ -11,9 +11,9 @@ const AdminRoute = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!loading && !isAdmin) {
+        if (!loading && !isAdmin && !isAdminLoading) {
             // TODO: active navigate after publish reviewPending page
-            // navigate('/', { state: { from: location }, replace: true });
+            navigate('/', { state: { from: location }, replace: true });
         }
     }, [loading, user, navigate, location]);
 

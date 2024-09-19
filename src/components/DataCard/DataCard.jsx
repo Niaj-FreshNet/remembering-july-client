@@ -6,49 +6,43 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardActions from '@mui/material/CardActions';
-
-
-
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import { FacebookIcon, FacebookMessengerIcon, FacebookMessengerShareButton, FacebookShareButton, TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share';
 import { useNavigate } from 'react-router-dom';
-import { FacebookIcon, FacebookMessengerIcon, FacebookMessengerShareButton, FacebookShareButton, TelegramIcon, TelegramShareButton, TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from 'react-share';
 
-
-
-const 
-DataCard = ({ card, index }) => {
-
-    const { _id, category, name, occupation, institution, place, date, image } = card;
+const DataCard = ({ card, index }) => {
+    const { _id, category, name, occupation, institution, date, image } = card;
     const navigate = useNavigate();
 
     const [showShareOptions, setShowShareOptions] = React.useState(false);
 
     const handleClick = () => {
-        navigate(`/info/${_id}`);      {/* replaced "cards/${_id}" with "info/${_id}"*/}
-    }
+        navigate(`/info/${_id}`);
+    };
 
     const handleShareClick = () => {
         setShowShareOptions(!showShareOptions);
-    }
+    };
 
-    const shareUrl = `${window.location.origin}/info/${_id}`;   {/* replaced "cards/${_id}" with "info/${_id}"*/}
+    const shareUrl = `${window.location.origin}/info/${_id}`;
     const title = `${name} - ${category} at ${date}`;
 
-
     return (
-        <Card className='' sx={{ maxWidth: 345 }}>
-            <CardActionArea onClick={handleClick}>
-                <p className="absolute left-0 ml-0 mt-0 px-3 py-1 font-bold bg-red-600 text-white">{index}</p>
+        <Card sx={{ maxWidth: 345, position: 'relative' }}>
+            <CardActionArea onClick={handleClick} sx={{ position: 'relative' }}>
+                {/* Index Badge */}
+                <p className="absolute top-2 left-2 px-2 py-1 font-bold bg-red-600 text-white rounded" style={{ zIndex: 10 }}>{index}</p>
+
+                {/* Media with Hover Effect */}
                 <CardMedia
                     component="img"
-                    sx={{ height: 240 }}
+                    sx={{ height: 240, transition: 'transform 0.3s ease' }}
                     image={image}
-                    alt="green iguana"
+                    alt={name}
+                    className='hover:scale-105'
                 />
-                <CardContent className='' sx={{ height: 210 }}>
+
+                {/* Upper Content with Hover Effect */}
+                <CardContent sx={{ height: 210, transition: 'transform 0.3s ease' }} className='hover:translate-y-[-0.5rem]'>
                     <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                         {name}
                     </Typography>
@@ -58,14 +52,13 @@ DataCard = ({ card, index }) => {
                     <Typography variant="body1" sx={{ color: 'text.primary' }}>
                         {institution}
                     </Typography>
-                    {/* <Typography variant="body1" sx={{ color: 'text.primary' }}>
-                        {place}
-                    </Typography> */}
                     <Typography variant="body1" component="div" sx={{ color: 'text.secondary', marginY: 1 }}>
                         {date}
                     </Typography>
                 </CardContent>
             </CardActionArea>
+
+            {/* Actions */}
             <CardActions className='flex justify-end'>
                 {showShareOptions && (
                     <div className="hidden md:flex md:space-x-2">

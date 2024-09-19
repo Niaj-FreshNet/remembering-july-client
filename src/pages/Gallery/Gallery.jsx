@@ -1,79 +1,64 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { Button, Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import useAuth from '../../hooks/useAuth';
 import { SlCalender } from 'react-icons/sl';
 import { MdPlace } from 'react-icons/md';
 import { CiShare2 } from 'react-icons/ci';
 import { FacebookMessengerIcon, FacebookMessengerShareButton, FacebookShareButton, TwitterShareButton, WhatsappIcon, WhatsappShareButton, XIcon } from "react-share";
-import { FacebookIcon } from "../SignIn/CustomIcons";
 import { FaFacebook } from 'react-icons/fa';
 import useGallery from '../../hooks/useGallery';
 
-
 const Gallery = () => {
-    const { user } = useAuth();
     const [gallery, loading, refetch] = useGallery();
-    const [data, setData] = useState([]);
     const [selectedMedia, setSelectedMedia] = useState(null);
     const [showShareOptions, setShowShareOptions] = useState(false);
 
-
-
-
+    const verifiedMedia = gallery.filter(media => media.status === 'verified');
 
     const handleShareClick = () => {
         setShowShareOptions(!showShareOptions);
-    }
-
+    };
 
     const shareUrl = `${window.location.origin}/gallery`;
     const title = `${"GENOCIDE 2024"} - ${"GENOCIDE 2024"} at ${"GENOCIDE 2024"}`;
 
-
-
     return (
-        <div className="mx-auto mt-10 mb-10">
-
-            <div className='underline text-center'>
-                <h2 className='text-3xl font-semibold font-serif text-white'>Genocide Gallery 2024</h2>
-            </div>
-
-            <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-6">
-                {data.map((item) => (
+        <div>
+            <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6 mt-6">
+                {verifiedMedia.map((item) =>
                     item.mediaUrls?.map((url, index) => (
                         <div
                             key={index}
-                            className="relative w-full h-64 overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                            className="relative w-full h-64 overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
                             onClick={() => setSelectedMedia({ url, description: item.description, date: item.date, place: item.place })}
                         >
-                            <div className="absolute top-0 left-0 p-2 bg-black text-white text-sm rounded-br-lg">
-                                {item.date}
-                            </div>
                             {url.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
                                 <img
                                     src={url}
                                     alt={`Image ${index + 1}`}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 />
                             ) : (
                                 <video
-                                    className="w-full h-full object-cover"
-                                    // controls
+                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     src={url}
+                                    // controls
                                 />
                             )}
+                            <div className='absolute bottom-0 left-0 text-sm font-semibold text-gray-700 bg-white rounded-tr-md px-2 opacity-90 group-hover:opacity-100 transition-opacity duration-300'>
+                                {item.date}
+                            </div>
                         </div>
                     ))
-                ))}
+                )}
             </div>
 
             {/* Popup for Full-Size Media */}
             <Dialog open={Boolean(selectedMedia)} onClose={() => setSelectedMedia(null)} fullWidth maxWidth="md">
-                <DialogTitle className='border-b-2 border-gray-100'>Genocide 2024</DialogTitle>
+                <DialogTitle className='border-b-2 border-gray-100'>
+                    Genocide 2024
+                </DialogTitle>
                 <IconButton
-                    // edge="end"
                     color="inherit"
                     onClick={() => setSelectedMedia(null)}
                     aria-label="close"
@@ -94,18 +79,17 @@ const Gallery = () => {
                                             <img
                                                 src={selectedMedia.url}
                                                 alt="Selected"
-                                                className="w-full h-auto max-h-96 object-contain rounded-md"
+                                                className="w-full h-auto max-h-96 object-contain rounded-md transition-transform duration-300 hover:scale-105"
                                             />
                                         ) : (
                                             <video
-                                                className="w-full h-auto max-h-svh object-contain rounded-md"
+                                                className="w-full h-auto max-h-svh object-contain rounded-md transition-transform duration-300 hover:scale-105"
                                                 controls
                                                 src={selectedMedia.url}
                                             />
                                         )
                                     }
                                 </div>
-
                             </div>
 
                             <div className='flex justify-between px-4 py-2'>
@@ -149,7 +133,6 @@ const Gallery = () => {
                     </div>
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 };

@@ -84,7 +84,7 @@ const Declined = () => {
         <Box padding={1} bgcolor="background.paper">
 
             <Helmet>
-                <title>Rejected Forms - GENOCIDE</title>
+                <title>Rejected Forms - GENOCIDE 2024</title>
             </Helmet>
 
             <Box display="flex" justifyContent="center" mt={1} mb={2}>
