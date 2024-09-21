@@ -4,7 +4,7 @@ import useAxiosPublic from "./useAxiosPublic";
 const useGallery = () => {
     const axiosPublic = useAxiosPublic();
 
-    const {data: gallery = [], isPending: loading, refetch} = useQuery({
+    const {data: gallery = [], isLoading: loading, refetch} = useQuery({
         queryKey: ['gallery'],
         queryFn: async () => {
             const res = await axiosPublic.get('/gallery');

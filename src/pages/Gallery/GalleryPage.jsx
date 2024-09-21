@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Upload from './Upload';
 import './gallery.css'; // Ensure this import is at the top
@@ -18,8 +18,12 @@ const LoadingSkeleton = () => (
                     animation="wave"
                     variant="rectangular"
                     className="rounded-lg mx-auto"
-                    width={210}
-                    height={300}
+                    style={{ 
+                        // borderRadius: '8px', 
+                        backgroundColor: 'lightgray', // Adjust the background color
+                        width: '210px',
+                        height: '300px'
+                      }}
                 />
             ))}
         </div>
@@ -29,6 +33,11 @@ const LoadingSkeleton = () => (
 
 const GalleryPage = () => {
     const [gallery, loading, refetch] = useGallery();
+
+    useEffect(() => {
+        console.log('Loading state:', loading);
+      }, [loading]);
+
 
     return (
         <div className="gallery-container">
@@ -59,3 +68,26 @@ const GalleryPage = () => {
 };
 
 export default GalleryPage;
+
+
+// import React from 'react';
+// import { Skeleton } from '@mui/material';
+
+// const TestSkeleton = () => (
+//     <div className="flex justify-center">
+//              <div className="grid grid-cols-2 mx-auto md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-x-2 md:gap-x-4 gap-y-4 my-8">
+//               {Array.from(new Array(20)).map((_, index) => (
+//                     <Skeleton
+//                         key={index}
+//                         animation="wave"
+//                         variant="rectangular"
+//                         className="rounded-lg mx-auto"
+//                         width={210}
+//                         height={300}
+//                     />
+//                 ))}
+//             </div>
+//         </div>
+// );
+
+// export default TestSkeleton;

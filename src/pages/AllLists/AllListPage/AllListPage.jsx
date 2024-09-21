@@ -17,8 +17,12 @@ const LoadingSkeleton = () => (
                     animation="wave"
                     variant="rectangular"
                     className="rounded-lg mx-auto"
-                    width={210}
-                    height={300}
+                    style={{ 
+                        // borderRadius: '8px', 
+                        backgroundColor: 'lightgray', // Adjust the background color
+                        width: '210px',
+                        height: '300px'
+                      }}
                 />
             ))}
         </div>

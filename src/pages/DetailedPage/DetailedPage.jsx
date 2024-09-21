@@ -333,16 +333,16 @@ const DetailedPage = () => {
             </div>
 
             {(
-                <>
+            
                     <div className="max-w-screen-lg py-4 md:p-6 space-y-2">
                         <p className="font-bold underline">Info. Sources:</p>
                         <ul className="list-disc pl-6">
-                            <li className="italic">
+                            <li className="itali break-words">
                                 {getDisplayValue(details.sourceLink, "তথ্য নেই")}
                             </li>
                         </ul>
                     </div>
-                </>
+               
             )}
             {
                 isAdmin ?

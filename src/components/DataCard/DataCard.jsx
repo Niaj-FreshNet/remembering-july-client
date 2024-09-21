@@ -60,7 +60,7 @@ const DataCard = ({ card, index }) => {
 
                     <div className='flex flex-col justify-between h-full overflow-clip'>
                         <div className='flex flex-col justify-around h-full overflow-hidden'>
-                            <div className='text-2xl text-black'>
+                            <div className='text-xl text-black'>
                                 {name}
                             </div>
                             <div className='px-1'>
