@@ -30,7 +30,8 @@ const TotalCount = () => {
                     শহীদ
                 </div>
                 <div className="text-4xl text-white mt-1 h-full font-bold text-center">
-                    {countsLoading ? <CircularProgress size={30} /> : VerifiedShaheedCards.length}
+                    {/* {countsLoading ? <CircularProgress size={30} /> : VerifiedShaheedCards.length} */}
+                    {countsLoading ? <CircularProgress size={30} /> : '1400+'}
                 </div>
             </div>
             <div onClick={handleNavigate} className="label flex flex-col items-center w-1/3 bg-green-700 px-4 py-2">
@@ -38,7 +39,8 @@ const TotalCount = () => {
                     আহত
                 </div>
                 <div className="text-4xl mt-1 text-white h-full font-bold text-center">
-                    {countsLoading ? <CircularProgress size={30} /> : verifiedInjuredCards.length}
+                    {/* {countsLoading ? <CircularProgress size={30} /> : verifiedInjuredCards.length} */}
+                    {countsLoading ? <CircularProgress size={30} /> : '22k+'}
                 </div>
             </div>
             <div onClick={handleNavigate} className="label flex flex-col items-center rounded-br-2xl rounded-br-l w-1/3 bg-black px-4 py-2">

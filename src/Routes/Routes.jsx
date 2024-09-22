@@ -32,7 +32,7 @@ import GalleryPage from "../pages/Gallery/GalleryPage";
 
 const isUnderConstruction = true;
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <Main></Main>,
@@ -133,3 +133,5 @@ export const router = createBrowserRouter([
     ]
   },
 ]);
+
+export default router;
