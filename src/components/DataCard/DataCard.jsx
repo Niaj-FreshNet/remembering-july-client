@@ -12,8 +12,9 @@ import { SlCalender } from 'react-icons/sl';
 import { CiShare1, CiShare2 } from 'react-icons/ci';
 
 const DataCard = ({ card, index }) => {
-    const { _id, category, name, occupation, institution, date, image } = card;
+    const { _id, category, name, occupation, institution, permanentAddress, address, date, image } = card;
     const navigate = useNavigate();
+    console.log(address)
 
     const [showShareOptions, setShowShareOptions] = React.useState(false);
 
@@ -68,12 +69,12 @@ const DataCard = ({ card, index }) => {
                                     {occupation}
                                 </div>
                                 <div className='text-sm'>
-                                    {institution}
+                                {institution && institution.trim() !== "" ? institution : permanentAddress}
                                 </div>
                             </div>
                         </div>
                         <div className='flex items-center gap-2 text-base text-gray-600 mt-auto px-1'>
-                        <SlCalender /> {date}
+                            <SlCalender /> {date}
                         </div>
                     </div>
                 </CardContent>

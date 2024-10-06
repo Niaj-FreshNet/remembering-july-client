@@ -154,15 +154,15 @@ const FormInjured = () => {
 
     return (
         <div className="bg-[#F0EBF8]">
-        <Helmet>
-            <title>আহতদের তথ্য দিন - GENOCIDE 2024</title>
-        </Helmet>
+            <Helmet>
+                <title>আহতদের তথ্য দিন - GENOCIDE 2024</title>
+            </Helmet>
             <div className="max-w-screen-lg mx-auto">
                 <form onSubmit={handleSubmit(onSubmit)} className="max-w-screen-lg flex flex-col gap-3">
                     <div className=" rounded-b-[12px] bg-white shadow-sm w-4/5 mx-auto">
                         <div className="form-control w-full pl-8 pr-8 py-6 my-auto text-pretty">
-                        <span className="label label-text text-2xl">বৈষম্যবিরোধী ছাত্র আন্দোলন - ২০২৪ এর আহত ভাই-বোনদের সঠিক তথ্য সরবরাহ করে সকল আহতদের তালিকা প্রস্তুতিতে সহযোগিতা করুন।</span>
-                        <span className="label label-text">এই অল্প সময়ে এত এত আহত ভাই-বোনদের তথ্য সংগ্রহ করা একার পক্ষে প্রায় অসম্ভব। আপনাদের পরিচিত কেউ আহত হয়ে থাকলে তথ্য পাঠিয়ে সাহায্য করুন। গুরুত্বপূর্ণ সকল তথ্য অবশ্যই সংযুক্ত করুন।</span>
+                            <span className="label label-text text-2xl">বৈষম্যবিরোধী ছাত্র আন্দোলন - ২০২৪ এর আহত ভাই-বোনদের সঠিক তথ্য সরবরাহ করে সকল আহতদের তালিকা প্রস্তুতিতে সহযোগিতা করুন।</span>
+                            <span className="label label-text">এই অল্প সময়ে এত এত আহত ভাই-বোনদের তথ্য সংগ্রহ করা একার পক্ষে প্রায় অসম্ভব। আপনাদের পরিচিত কেউ আহত হয়ে থাকলে তথ্য পাঠিয়ে সাহায্য করুন। গুরুত্বপূর্ণ সকল তথ্য অবশ্যই সংযুক্ত করুন।</span>
                             {/* <span className="label label-text text-red-500">Logged in as: {user.email}</span> */}
                             <span className="label label-text font-bold text-red-500">* Indicates required question
                             </span>
@@ -462,9 +462,10 @@ const FormInjured = () => {
                         <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
                             <div className="flex mb-2 -mt-2">
                                 <span className="label label-text text-[16px]">স্থায়ী ঠিকানা</span>
+                                <span className="label label-text text-[16px] font-bold text-red-500">*</span>
                             </div>
                             <input
-                                {...register("permanentAddress", { required: false })}
+                                {...register("permanentAddress", { required: true })}
 
                                 defaultValue=''
                                 type="text"
@@ -600,14 +601,14 @@ const FormInjured = () => {
                 {loading && <ProgressBar progress={progress} />}
                 {/* Loader Dialog */}
                 <Dialog open={loading}>
-                <DialogContent>
-                    <div className="flex flex-col justify-center items-center">
-                        <CircularProgress variant="determinate" value={progress} />
-                        <Typography variant="body2" color="textSecondary">{`${Math.round(progress)}%`}</Typography>
-                        <Typography variant="body2" color="textSecondary">{stage}</Typography>
-                    </div>
-                </DialogContent>
-            </Dialog>
+                    <DialogContent>
+                        <div className="flex flex-col justify-center items-center">
+                            <CircularProgress variant="determinate" value={progress} />
+                            <Typography variant="body2" color="textSecondary">{`${Math.round(progress)}%`}</Typography>
+                            <Typography variant="body2" color="textSecondary">{stage}</Typography>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
             </div >
         </div >

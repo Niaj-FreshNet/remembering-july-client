@@ -85,7 +85,9 @@ const EditInfo = () => {
 
                 // :::::::::::::::CHATGPT:::::::::::::::: =>>>> hey chatgpt, here add another function works same as imageUrl for the mediaUrls. means which media URLs already have been submited, the should remain, and if new media will be upload then it should also include with the previous URLs. 
 
-                let mediaUrls = [...media]; // Retain existing media URLs
+                // Initialize mediaUrls with existing media URLs, ensuring media is an array
+                let mediaUrls = Array.isArray(media) ? [...media] : [];
+
                 if (data.media && data.media.length > 0) {
                     setStage('Uploading media files...');
                     const newMediaUrls = [];
@@ -144,6 +146,7 @@ const EditInfo = () => {
                     submissionDate: dayjs().format('D MMMM, YYYY'),
                     status: 'verified', // Add status field
                 };
+                console.log(allInfo)
 
                 try {
                     setStage('Submitting data...');

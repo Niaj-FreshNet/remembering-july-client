@@ -422,9 +422,10 @@ const FormShaheed = () => {
                         <label className="form-control w-full pl-8 pr-8 py-6 my-auto">
                             <div className="flex mb-2 -mt-2">
                                 <span className="label label-text text-[16px]">স্থায়ী ঠিকানা</span>
+                                <span className="label label-text text-[16px] font-bold text-red-500">*</span>
                             </div>
                             <input
-                                {...register("permanentAddress", { required: false })}
+                                {...register("permanentAddress", { required: true })}
 
                                 type="text"
                                 placeholder="permanent address"
